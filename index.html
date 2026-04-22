@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>3-2 이노무 시키들과 함께하는 기록♥</title>
+<title>3-2 대입 상담 시스템</title>
 <link href="https://fonts.googleapis.com/css2?family=Gaegu:wght@300;400;700&family=Nanum+Gothic+Coding&family=Nanum+Gothic:wght@400;700;800&family=Jua&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <style>
@@ -328,6 +328,39 @@ body{font-family:'Nanum Gothic',sans-serif;color:var(--text);}
 .memo-box{background:rgba(240,165,0,.05);border:1.5px solid rgba(240,165,0,.25);border-radius:var(--rs);padding:14px;margin-top:12px;}
 .memo-box-lbl{font-size:11px;font-weight:700;color:var(--amber,#b07a00);margin-bottom:6px;}
 
+/* ── Reset PW ── */
+.reset-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:10px;}
+.reset-card{background:#fff;border:1.5px solid var(--border);border-radius:var(--rs);padding:13px 15px;display:flex;align-items:center;justify-content:space-between;gap:10px;transition:box-shadow .2s;}
+.reset-card:hover{box-shadow:var(--sh);}
+.reset-card-info{flex:1;}
+.reset-card-num{font-size:11px;font-weight:700;color:var(--blue);margin-bottom:2px;}
+.reset-card-name{font-size:14px;font-weight:700;color:var(--navy);}
+.reset-card-status{font-size:11px;margin-top:3px;}
+.rst-ok{color:var(--green);}.rst-def{color:var(--orange);}
+.btn-rpw{padding:7px 13px;background:var(--orange);color:#fff;border:none;border-radius:var(--rx);font-family:'Nanum Gothic',sans-serif;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap;transition:background .2s;}
+.btn-rpw:hover{background:#b04e00;}
+
+/* ── Student Notif ── */
+.s-notif-btn{position:relative;display:inline-flex;align-items:center;gap:5px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.16);color:rgba(255,255,255,.8);font-family:'Nanum Gothic',sans-serif;font-size:12px;padding:7px 13px;border-radius:8px;cursor:pointer;transition:all .2s;}
+.s-notif-btn:hover{background:rgba(255,255,255,.18);color:#fff;}
+.s-notif-badge{position:absolute;top:-5px;right:-5px;min-width:18px;height:18px;padding:0 4px;background:var(--red);color:#fff;font-size:10px;font-weight:800;border-radius:9px;display:flex;align-items:center;justify-content:center;border:2px solid #2d6a4f;animation:badgePop .3s cubic-bezier(.34,1.56,.64,1);}
+.s-notif-badge.hidden{display:none;}
+.s-notif-drawer{position:fixed;top:60px;right:0;width:min(380px,100vw);height:calc(100vh - 60px);background:#fff;box-shadow:-8px 0 40px rgba(27,67,50,.2);z-index:8000;display:flex;flex-direction:column;transform:translateX(100%);transition:transform .3s cubic-bezier(.4,0,.2,1);}
+.s-notif-drawer.open{transform:translateX(0);}
+.s-notif-drawer-head{display:flex;align-items:flex-start;justify-content:space-between;padding:16px 20px;background:linear-gradient(135deg,#1b4332,#40916c);color:#fff;flex-shrink:0;}
+.s-notif-close{background:none;border:none;color:rgba(255,255,255,.7);font-size:18px;cursor:pointer;padding:4px 8px;border-radius:4px;line-height:1;}
+.s-notif-close:hover{color:#fff;}
+
+/* Praise board (student - anonymous) */
+.pb-card{background:#fff;border:1.5px solid var(--border);border-radius:var(--rs);overflow:hidden;margin-bottom:10px;}
+.pb-head{display:flex;align-items:center;gap:10px;background:linear-gradient(135deg,#fff0f7,#fff8fb);padding:11px 14px;border-bottom:1px solid rgba(224,92,138,.15);}
+.pb-target{font-size:14px;font-weight:700;color:var(--pink);}
+.pb-date{font-size:11px;color:var(--text3);margin-left:auto;}
+.pb-body{padding:11px 14px;font-size:13px;color:var(--text);line-height:1.7;}
+.pb-anon{font-size:11px;color:var(--text3);padding:6px 14px;border-top:1px solid var(--border);background:var(--surface2);}
+
+
+
 @media(max-width:640px){
   .grid2,.s-en-body{grid-template-columns:1fr;}
   .grid2 .sp2,.s-en-body .sp2,.lv-group-wrap{grid-column:span 1;}
@@ -348,8 +381,8 @@ body{font-family:'Nanum Gothic',sans-serif;color:var(--text);}
 <div class="page active" id="p-home">
   <div class="hbg hbg1"></div><div class="hbg hbg2"></div><div class="hbg hbg3"></div>
   <div class="home-inner">
-    <div class="home-badge">2026학년도</div>
-    <div class="home-title">3학년 2반<br>이노무 시키들과 함께하는 기록♥</div>
+    <div class="home-badge">2026학년도 대입</div>
+    <div class="home-title">3학년 2반<br>대입 상담 시스템</div>
     <div class="home-sub">접속 유형을 선택해 주세요</div>
     <div class="role-cards">
       <div class="role-card teacher" onclick="goAuth('teacher')">
@@ -452,7 +485,7 @@ body{font-family:'Nanum Gothic',sans-serif;color:var(--text);}
 
   <header class="app-header">
     <div style="display:flex;align-items:center">
-      <span class="app-logo">3-2 기록</span>
+      <span class="app-logo">3-2 대입 상담</span>
       <span class="app-badge">TEACHER</span>
     </div>
     <div style="display:flex;gap:8px;align-items:center">
@@ -469,6 +502,7 @@ body{font-family:'Nanum Gothic',sans-serif;color:var(--text);}
       <button class="tab-btn" id="tt-detail" style="display:none" onclick="tTab('detail')">👤 학생 상세</button>
       <button class="tab-btn" onclick="tTab('diary-t')">📔 선행일지</button>
       <button class="tab-btn" onclick="tTab('praise-t')">♥ 칭찬 현황</button>
+      <button class="tab-btn" onclick="tTab('reset-pw')">🔑 비밀번호 초기화</button>
     </div>
 
     <!-- overview -->
@@ -557,8 +591,20 @@ body{font-family:'Nanum Gothic',sans-serif;color:var(--text);}
         <div class="rank-list" id="praise-rank"></div>
       </div>
       <div class="card">
-        <div class="card-h">전체 칭찬 기록</div>
+        <div class="card-h">전체 칭찬 기록 <span style="font-size:11px;font-weight:400;color:var(--text3)">(누가 → 누구를 → 무슨 내용)</span></div>
         <div id="t-praise-list"></div>
+      </div>
+    </div>
+
+    <!-- 비밀번호 초기화 -->
+    <div class="tab-pane" id="tp-reset-pw">
+      <div class="card">
+        <div class="card-h">🔑 학생 비밀번호 초기화</div>
+        <div style="font-size:13px;color:var(--text2);margin-bottom:16px;padding:12px 14px;background:rgba(212,97,26,.06);border-radius:var(--rx);border-left:4px solid var(--orange);">
+          초기화하면 해당 학생의 비밀번호가 <strong>1111</strong>로 돌아갑니다.<br>
+          학생이 다음 로그인 시 새 비밀번호를 반드시 설정해야 합니다.
+        </div>
+        <div class="reset-grid" id="reset-grid"></div>
       </div>
     </div>
   </div>
@@ -566,12 +612,33 @@ body{font-family:'Nanum Gothic',sans-serif;color:var(--text);}
 
 <!-- ══════ STUDENT ══════ -->
 <div class="page" id="p-student">
+  <!-- Student Notif Drawer -->
+  <div class="notif-backdrop" id="s-notif-backdrop" onclick="closeSNotif()"></div>
+  <div class="s-notif-drawer" id="s-notif-drawer">
+    <div class="s-notif-drawer-head">
+      <div>
+        <div class="notif-drawer-title">🔔 나의 알림</div>
+        <div class="notif-drawer-sub" style="font-size:11px;opacity:.6;margin-top:2px">칭찬·피드백 새 소식</div>
+      </div>
+      <button class="s-notif-close" onclick="closeSNotif()">✕</button>
+    </div>
+    <div class="notif-actions">
+      <button class="btn-na" onclick="sMarkAllRead()">모두 읽음</button>
+      <button class="btn-na red" onclick="sClearNotif()">전체 삭제</button>
+    </div>
+    <div class="notif-list" id="s-notif-list"></div>
+  </div>
+
   <header class="app-header">
     <div style="display:flex;align-items:center">
       <span class="app-logo" id="s-hdr-name"></span>
       <span class="app-badge">STUDENT</span>
     </div>
     <div style="display:flex;gap:8px">
+      <button class="s-notif-btn" onclick="openSNotif()">
+        🔔 알림
+        <span class="s-notif-badge hidden" id="s-notif-count">0</span>
+      </button>
       <button class="btn-hdr" onclick="openCpw(false)">🔑 비밀번호 변경</button>
       <button class="btn-hdr" onclick="logout()">로그아웃</button>
     </div>
@@ -582,6 +649,7 @@ body{font-family:'Nanum Gothic',sans-serif;color:var(--text);}
       <button class="tab-btn" onclick="sTab('gb')">📋 생기부 분석</button>
       <button class="tab-btn" onclick="sTab('diary')">📔 선행일지</button>
       <button class="tab-btn" onclick="sTab('praise')">♥ 칭찬하기</button>
+      <button class="tab-btn" onclick="sTab('praiseboard')">📣 칭찬 게시판</button>
       <button class="tab-btn" onclick="sTab('feedback')">💬 피드백</button>
       <button class="tab-btn" onclick="sTab('example')">예시</button>
     </div>
@@ -757,6 +825,15 @@ body{font-family:'Nanum Gothic',sans-serif;color:var(--text);}
         <div class="card-h">내가 쓴 칭찬</div>
         <div id="s-praise-list"></div>
       </div>
+    </div>
+
+    <!-- 피드백 -->
+    <div class="tab-pane" id="sp-praiseboard">
+      <div style="background:linear-gradient(135deg,#fff0f7,#fff8fb);border:1.5px solid rgba(224,92,138,.15);border-radius:var(--r);padding:18px 20px;margin-bottom:16px">
+        <div class="praise-title" style="margin-bottom:4px">📣 우리반 칭찬 게시판</div>
+        <div style="font-size:12px;color:var(--text3);line-height:1.6">작성자는 익명으로 표시됩니다 💕 칭찬은 모두에게 공개돼요!</div>
+      </div>
+      <div id="s-praiseboard-list"></div>
     </div>
 
     <!-- 피드백 -->
@@ -1014,14 +1091,42 @@ function doChangePw(){
 function tTab(t){
   document.querySelectorAll('#t-tabbar .tab-btn').forEach(b=>b.classList.remove('active'));
   document.querySelectorAll('.tab-pane[id^="tp-"]').forEach(p=>p.classList.remove('active'));
-  const map={'overview':'tp-overview','detail':'tp-detail','diary-t':'tp-diary-t','praise-t':'tp-praise-t'};
-  const tabMap={'overview':0,'diary-t':2,'praise-t':3};
+  const map={'overview':'tp-overview','detail':'tp-detail','diary-t':'tp-diary-t','praise-t':'tp-praise-t','reset-pw':'tp-reset-pw'};
+  const tabIdx={'overview':0,'diary-t':2,'praise-t':3,'reset-pw':4};
   const btns=document.querySelectorAll('#t-tabbar .tab-btn');
   if(t==='detail'){document.getElementById('tt-detail').style.display='';document.getElementById('tt-detail').classList.add('active');}
-  else if(tabMap[t]!==undefined) btns[tabMap[t]].classList.add('active');
+  else if(tabIdx[t]!==undefined) btns[tabIdx[t]].classList.add('active');
   document.getElementById(map[t]).classList.add('active');
-  if(t==='praise-t')renderPraiseChart();
-  if(t==='diary-t')renderTDiaryList();
+  if(t==='praise-t') renderPraiseChart();
+  if(t==='diary-t') renderTDiaryList();
+  if(t==='reset-pw') renderResetGrid();
+}
+
+function renderResetGrid(){
+  const g=document.getElementById('reset-grid');
+  g.innerHTML=STUDENTS.map(s=>{
+    const k=K(s),d=db[k];
+    const changed=d.changed;
+    return `<div class="reset-card">
+      <div class="reset-card-info">
+        <div class="reset-card-num">${s.no}번</div>
+        <div class="reset-card-name">${s.name}</div>
+        <div class="reset-card-status ${changed?'rst-ok':'rst-def'}">${changed?'✅ 비밀번호 변경됨':'⚠️ 초기 비밀번호 사용중'}</div>
+      </div>
+      <button class="btn-rpw" onclick="resetStudentPw(${s.no})">초기화</button>
+    </div>`;
+  }).join('');
+}
+
+function resetStudentPw(no){
+  const s=STUDENTS.find(x=>x.no===no);
+  if(!confirm(`${s.name} 학생의 비밀번호를 1111로 초기화할까요?`)) return;
+  const k=K(s);
+  db[k].pw=DPW;
+  db[k].changed=false;
+  dbSave();
+  renderResetGrid();
+  toast(`🔑 ${s.name} 학생 비밀번호가 초기화되었습니다.`);
 }
 function dSubTab(t){
   document.querySelectorAll('#d-subtabbar .tab-btn').forEach(b=>b.classList.remove('active'));
@@ -1168,7 +1273,14 @@ function renderDetailPraise(no){
 
 function saveFb(){
   if(!curTSt)return;
-  db[K(curTSt)].feedback=document.getElementById('d-fb').value.trim();
+  const k=K(curTSt);
+  const prev=db[k].feedback||'';
+  const next=document.getElementById('d-fb').value.trim();
+  db[k].feedback=next;
+  // 학생 알림
+  if(next && next!==prev){
+    addSNotif(curTSt.no,'feedback',`선생님이 피드백을 ${prev?'수정':'작성'}했습니다 — "${next.slice(0,40)}${next.length>40?'…':''}"`);
+  }
   dbSave();renderOv();toast('💬 피드백이 저장되었습니다.');
 }
 function saveKcue(){
@@ -1191,6 +1303,8 @@ function addConsult(){
   if(!dt){toast('❗ 날짜를 선택해 주세요.');return;}
   if(!ct){toast('❗ 내용을 입력해 주세요.');return;}
   db[k].consults.push({date:dt,content:ct});
+  // 학생 알림
+  addSNotif(curTSt.no,'consult',`${dt} 상담 기록이 추가됐어요 — "${ct.slice(0,40)}${ct.length>40?'…':''}"`);
   dbSave();renderClist(k);renderOv();
   document.getElementById('ac-ta').value='';toast('📝 상담 기록이 추가되었습니다.');
 }
@@ -1253,14 +1367,16 @@ function renderPraiseChart(){
       <div class="rank-name">${name}</div>
       <div class="rank-cnt">칭찬 ${cnt}회 💕</div>
     </div>`).join('');
-  // full praise list
+  // full praise list — 누가 → 누구를 → 무슨 내용
   const el=document.getElementById('t-praise-list');
+  if(!all.length){el.innerHTML='<div class="empty"><div class="ei">♥</div><p>아직 칭찬 기록이 없습니다.</p></div>';return;}
   el.innerHTML=[...all].reverse().map(p=>`
     <div class="diary-item">
-      <div class="di-head">
+      <div class="di-head" style="flex-wrap:wrap;gap:6px">
         <span class="di-date">📅 ${p.date}</span>
-        <span class="di-name">칭찬받은 친구: ${p.targetName}</span>
-        <span style="font-size:11px;color:var(--text3);margin-left:6px">작성자: ${p.fromName}</span>
+        <span style="font-size:12px;font-weight:700;color:var(--blue)">${p.fromName}</span>
+        <span style="font-size:12px;color:var(--text3)">→</span>
+        <span style="font-size:12px;font-weight:700;color:var(--pink)">${p.targetName}</span>
       </div>
       <div class="di-body">${p.content.replace(/\n/g,'<br>')}</div>
     </div>`).join('');
@@ -1269,6 +1385,8 @@ function renderPraiseChart(){
 // ══ STUDENT ══
 function initStudent(){
   const s=curSt;
+  // sNotifs 초기화
+  if(!db[K(s)].sNotifs) db[K(s)].sNotifs=[];
   document.getElementById('s-hdr-name').textContent=`3-2 ${s.no}번 ${s.name}`;
   // praise select
   const psel=document.getElementById('praise-name');
@@ -1283,11 +1401,15 @@ function initStudent(){
   // gb name
   document.getElementById('gb-name').value=`${s.name}`;
   loadGb();
+  // 학생 알림 뱃지
+  updateSNotifBadge();
 }
 function sTab(t){
-  const tabs=['univ','gb','diary','praise','feedback','example'];
+  const tabs=['univ','gb','diary','praise','praiseboard','feedback','example'];
   document.querySelectorAll('.s-body .tab-btn').forEach((b,i)=>b.classList.toggle('active',tabs[i]===t));
   tabs.forEach(n=>document.getElementById('sp-'+n).classList.toggle('active',n===t));
+  if(t==='praiseboard') loadPraiseBoard();
+  if(t==='feedback') loadFb();
 }
 function loadInput(){
   const d=db[K(curSt)];
@@ -1480,6 +1602,8 @@ function addPraise(){
   if(!db._praises)db._praises=[];
   db._praises.push(entry);
   addNotif('praise',curSt.name,curSt.no,'칭찬하기',`${ts.name}을(를) 칭찬함 — "${ct.slice(0,40)}${ct.length>40?'…':''}"`);
+  // 칭찬받은 학생에게 알림
+  addSNotif(ts.no,'praise',`누군가 나를 칭찬해줬어요 💕 — "${ct.slice(0,40)}${ct.length>40?'…':''}"`);
   dbSave();
   document.getElementById('praise-content').value='';
   document.getElementById('praise-name').value='';
@@ -1505,6 +1629,101 @@ function loadFb(){
       <div class="fb-disp-lbl">📋 선생님 피드백</div>
       ${d.feedback&&d.feedback.trim()?`<div class="fb-disp-text">${d.feedback.replace(/\n/g,'<br>')}</div>`:'<div class="fb-disp-empty">아직 피드백이 없습니다.</div>'}
     </div>`;
+}
+
+// ══ PRAISE BOARD (anonymous) ══
+function loadPraiseBoard(){
+  const el=document.getElementById('s-praiseboard-list');
+  const all=[...(db._praises||[])].reverse();
+  if(!all.length){el.innerHTML='<div class="empty"><div class="ei">♥</div><p>아직 칭찬이 없어요!<br>첫 번째 칭찬의 주인공이 되어보세요 💕</p></div>';return;}
+  el.innerHTML=all.map(p=>`
+    <div class="pb-card">
+      <div class="pb-head">
+        <span style="font-size:16px">♥</span>
+        <span class="pb-target">${p.targetName}</span>
+        <span class="pb-date">📅 ${p.date}</span>
+      </div>
+      <div class="pb-body">${p.content.replace(/\n/g,'<br>')}</div>
+      <div class="pb-anon">✍️ 익명의 친구가 남긴 칭찬</div>
+    </div>`).join('');
+}
+
+// ══ STUDENT NOTIFICATION SYSTEM ══
+// 학생 개인 알림: db[k].sNotifs = [{id,type,summary,ts,read}]
+function addSNotif(studentNo, type, summary){
+  const s=STUDENTS.find(x=>x.no===studentNo);
+  if(!s) return;
+  const k=K(s);
+  if(!db[k].sNotifs) db[k].sNotifs=[];
+  db[k].sNotifs.unshift({
+    id: Date.now()+'_'+Math.random().toString(36).slice(2,5),
+    type, summary,
+    ts: new Date().toLocaleString('ko-KR',{month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'}),
+    read: false
+  });
+  if(db[k].sNotifs.length>100) db[k].sNotifs=db[k].sNotifs.slice(0,100);
+}
+function sUnreadCount(){
+  if(!curSt) return 0;
+  return(db[K(curSt)].sNotifs||[]).filter(n=>!n.read).length;
+}
+function updateSNotifBadge(){
+  const cnt=sUnreadCount();
+  const badge=document.getElementById('s-notif-count');
+  if(!badge) return;
+  badge.textContent=cnt>99?'99+':cnt;
+  badge.classList.toggle('hidden',cnt===0);
+}
+function openSNotif(){
+  renderSNotifList();
+  document.getElementById('s-notif-drawer').classList.add('open');
+  document.getElementById('s-notif-backdrop').classList.add('open');
+}
+function closeSNotif(){
+  document.getElementById('s-notif-drawer').classList.remove('open');
+  document.getElementById('s-notif-backdrop').classList.remove('open');
+}
+function sMarkAllRead(){
+  if(!curSt) return;
+  (db[K(curSt)].sNotifs||[]).forEach(n=>n.read=true);
+  dbSave();updateSNotifBadge();renderSNotifList();
+}
+function sClearNotif(){
+  if(!curSt) return;
+  if(!confirm('알림을 모두 삭제할까요?')) return;
+  db[K(curSt)].sNotifs=[];
+  dbSave();updateSNotifBadge();renderSNotifList();
+}
+const SNOTIF_ICON={praise:'♥',feedback:'💬',consult:'📝'};
+function renderSNotifList(){
+  const el=document.getElementById('s-notif-list');
+  const notifs=db[K(curSt)].sNotifs||[];
+  if(!notifs.length){
+    el.innerHTML='<div class="notif-empty"><div class="nei">🔕</div><p>아직 알림이 없어요!<br>칭찬이나 선생님 피드백이<br>오면 여기에 표시됩니다 💚</p></div>';
+    return;
+  }
+  el.innerHTML=notifs.map(n=>`
+    <div class="notif-item ${n.read?'':'unread'}" onclick="sReadNotif('${n.id}','${n.type}')">
+      <div class="ni-icon ${n.type==='praise'?'ni-praise':n.type==='feedback'?'ni-gb':'ni-diary'}">${SNOTIF_ICON[n.type]||'📌'}</div>
+      <div style="flex:1;min-width:0">
+        <div class="ni-who">
+          ${n.type==='praise'?'<span style="color:var(--pink)">♥ 칭찬이 도착했어요!</span>':n.type==='feedback'?'<span style="color:var(--green)">💬 선생님 피드백</span>':'<span style="color:var(--teal)">📝 상담 기록</span>'}
+          ${!n.read?'<span style="font-size:10px;font-weight:700;color:var(--blue);background:rgba(30,77,183,.1);padding:1px 6px;border-radius:8px;margin-left:6px">NEW</span>':''}
+        </div>
+        <div class="ni-what">${n.summary}</div>
+        <div class="ni-when">⏰ ${n.ts}</div>
+      </div>
+    </div>`).join('');
+}
+function sReadNotif(id,type){
+  const k=K(curSt);
+  const n=(db[k].sNotifs||[]).find(x=>x.id===id);
+  if(n) n.read=true;
+  dbSave();updateSNotifBadge();renderSNotifList();
+  closeSNotif();
+  // 해당 탭으로 이동
+  if(type==='praise') sTab('praiseboard');
+  else if(type==='feedback'||type==='consult') sTab('feedback');
 }
 
 function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2400);}
