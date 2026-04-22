@@ -201,6 +201,39 @@ body{font-family:'Noto Sans KR',sans-serif;color:var(--text);}
 /* Teacher-only badge */
 .teacher-only-badge{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:700;color:var(--orange);background:rgba(212,97,26,.08);border:1px solid rgba(212,97,26,.2);padding:2px 8px;border-radius:10px;margin-left:8px;}
 
+/* ── NOTIFICATION ── */
+.notif-btn{position:relative;display:inline-flex;align-items:center;gap:5px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.16);color:rgba(255,255,255,.8);font-family:'Noto Sans KR',sans-serif;font-size:12px;padding:7px 13px;border-radius:8px;cursor:pointer;transition:all .2s;}
+.notif-btn:hover{background:rgba(255,255,255,.18);color:#fff;}
+.notif-badge{position:absolute;top:-5px;right:-5px;min-width:18px;height:18px;padding:0 4px;background:var(--red);color:#fff;font-size:10px;font-weight:800;border-radius:9px;display:flex;align-items:center;justify-content:center;border:2px solid var(--navy2);animation:badgePop .3s cubic-bezier(.34,1.56,.64,1);}
+@keyframes badgePop{from{transform:scale(0)}to{transform:scale(1)}}
+.notif-badge.hidden{display:none;}
+.notif-drawer{position:fixed;top:60px;right:0;width:min(400px,100vw);height:calc(100vh - 60px);background:#fff;box-shadow:-8px 0 40px rgba(15,31,69,.2);z-index:8000;display:flex;flex-direction:column;transform:translateX(100%);transition:transform .3s cubic-bezier(.4,0,.2,1);}
+.notif-drawer.open{transform:translateX(0);}
+.notif-drawer-head{display:flex;align-items:flex-start;justify-content:space-between;padding:16px 20px;background:linear-gradient(135deg,var(--navy),var(--navy2));color:#fff;flex-shrink:0;}
+.notif-drawer-title{font-size:15px;font-weight:700;}
+.notif-drawer-sub{font-size:11px;opacity:.6;margin-top:2px;}
+.notif-close{background:none;border:none;color:rgba(255,255,255,.7);font-size:18px;cursor:pointer;padding:4px 8px;border-radius:4px;line-height:1;}
+.notif-close:hover{color:#fff;background:rgba(255,255,255,.1);}
+.notif-actions{display:flex;gap:8px;padding:10px 16px;background:var(--surface2);border-bottom:1px solid var(--border);flex-shrink:0;}
+.btn-na{padding:6px 12px;background:#fff;border:1.5px solid var(--border);border-radius:6px;font-family:'Noto Sans KR',sans-serif;font-size:11px;font-weight:600;color:var(--text2);cursor:pointer;transition:all .2s;}
+.btn-na:hover{border-color:var(--navy);color:var(--navy);}
+.btn-na.red{border-color:rgba(214,48,48,.3);color:var(--red);}
+.btn-na.red:hover{background:rgba(214,48,48,.05);}
+.notif-list{flex:1;overflow-y:auto;padding:12px 14px;}
+.notif-item{display:flex;align-items:flex-start;gap:12px;padding:13px 14px;border-radius:var(--rs);margin-bottom:8px;border:1.5px solid var(--border);cursor:pointer;transition:all .2s;position:relative;}
+.notif-item:hover{border-color:var(--blue);box-shadow:var(--sh);}
+.notif-item.unread{background:linear-gradient(135deg,rgba(30,77,183,.04),rgba(30,77,183,.01));border-color:rgba(30,77,183,.25);}
+.notif-item.unread::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--blue);border-radius:3px 0 0 3px;}
+.ni-icon{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;}
+.ni-univ{background:rgba(30,77,183,.1);}.ni-gb{background:rgba(14,143,122,.1);}.ni-diary{background:rgba(240,165,0,.1);}.ni-praise{background:rgba(224,92,138,.1);}.ni-memo{background:rgba(107,63,160,.1);}
+.ni-who{font-size:13px;font-weight:700;color:var(--navy);margin-bottom:2px;}
+.ni-what{font-size:12px;color:var(--text2);line-height:1.5;margin-bottom:4px;}
+.ni-when{font-size:11px;color:var(--text3);}
+.notif-empty{text-align:center;padding:48px 20px;color:var(--text3);}
+.notif-empty .nei{font-size:36px;margin-bottom:10px;}.notif-empty p{font-size:14px;}
+.notif-backdrop{position:fixed;inset:0;z-index:7999;background:rgba(0,0,0,.3);backdrop-filter:blur(2px);display:none;}
+.notif-backdrop.open{display:block;}
+
 /* STUDENT */
 #p-student{background:var(--bg);}
 .s-body{max-width:900px;margin:0 auto;padding:22px 18px 80px;}
@@ -399,12 +432,35 @@ body{font-family:'Noto Sans KR',sans-serif;color:var(--text);}
 
 <!-- ══════ TEACHER ══════ -->
 <div class="page" id="p-teacher">
+  <!-- Notification Drawer -->
+  <div class="notif-backdrop" id="notif-backdrop" onclick="closeNotif()"></div>
+  <div class="notif-drawer" id="notif-drawer">
+    <div class="notif-drawer-head">
+      <div>
+        <div class="notif-drawer-title">🔔 학생 활동 알림</div>
+        <div class="notif-drawer-sub">학생들이 새로 추가하거나 수정한 내용</div>
+      </div>
+      <button class="notif-close" onclick="closeNotif()">✕</button>
+    </div>
+    <div class="notif-actions">
+      <button class="btn-na" onclick="markAllRead()">모두 읽음 처리</button>
+      <button class="btn-na red" onclick="clearAllNotif()">전체 삭제</button>
+    </div>
+    <div class="notif-list" id="notif-list"></div>
+  </div>
+
   <header class="app-header">
     <div style="display:flex;align-items:center">
       <span class="app-logo">3-2 대입 상담</span>
       <span class="app-badge">TEACHER</span>
     </div>
-    <button class="btn-hdr" onclick="logout()">로그아웃</button>
+    <div style="display:flex;gap:8px;align-items:center">
+      <button class="notif-btn" onclick="openNotif()">
+        🔔 알림
+        <span class="notif-badge hidden" id="notif-count">0</span>
+      </button>
+      <button class="btn-hdr" onclick="logout()">로그아웃</button>
+    </div>
   </header>
   <div class="t-body">
     <div class="tab-bar" id="t-tabbar">
@@ -773,12 +829,84 @@ function dbLoad(){
     if(!db[k].memo) db[k].memo='';
     if(!db[k].kcue) db[k].kcue='';
   });
-  // global praise list
   if(!db._praises) db._praises=[];
   if(!db._diaries) db._diaries=[];
+  if(!db._notifs) db._notifs=[];  // {id, type, studentName, studentNo, area, summary, ts, read}
 }
 function dbSave(){localStorage.setItem(SK,JSON.stringify(db));}
 function K(s){return`${s.no}_${s.name}`;}
+
+// ══ NOTIFICATION SYSTEM ══
+function addNotif(type, studentName, studentNo, area, summary){
+  if(!db._notifs) db._notifs=[];
+  const notif={
+    id: Date.now()+'_'+Math.random().toString(36).slice(2,6),
+    type,         // 'univ'|'gb'|'diary'|'praise'|'memo'
+    studentName,
+    studentNo,
+    area,         // 영역 이름
+    summary,      // 내용 요약
+    ts: new Date().toLocaleString('ko-KR',{month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'}),
+    read: false
+  };
+  db._notifs.unshift(notif); // newest first
+  // keep max 200
+  if(db._notifs.length>200) db._notifs=db._notifs.slice(0,200);
+  dbSave();
+}
+function unreadCount(){return(db._notifs||[]).filter(n=>!n.read).length;}
+function updateNotifBadge(){
+  const cnt=unreadCount();
+  const badge=document.getElementById('notif-count');
+  if(!badge)return;
+  badge.textContent=cnt>99?'99+':cnt;
+  badge.classList.toggle('hidden',cnt===0);
+}
+function openNotif(){
+  renderNotifList();
+  document.getElementById('notif-drawer').classList.add('open');
+  document.getElementById('notif-backdrop').classList.add('open');
+}
+function closeNotif(){
+  document.getElementById('notif-drawer').classList.remove('open');
+  document.getElementById('notif-backdrop').classList.remove('open');
+}
+function markAllRead(){
+  (db._notifs||[]).forEach(n=>n.read=true);
+  dbSave();updateNotifBadge();renderNotifList();
+}
+function clearAllNotif(){
+  if(!confirm('알림을 모두 삭제할까요?'))return;
+  db._notifs=[];dbSave();updateNotifBadge();renderNotifList();
+}
+function markRead(id){
+  const n=(db._notifs||[]).find(x=>x.id===id);
+  if(n&&!n.read){n.read=true;dbSave();updateNotifBadge();renderNotifList();}
+}
+const NOTIF_ICON={univ:'🏫',gb:'📋',diary:'📔',praise:'♥',memo:'📝'};
+const NOTIF_ICON_CLASS={univ:'ni-univ',gb:'ni-gb',diary:'ni-diary',praise:'ni-praise',memo:'ni-memo'};
+const NOTIF_COLOR={univ:'var(--blue)',gb:'var(--teal)',diary:'var(--accent)',praise:'var(--pink)',memo:'var(--purple)'};
+function renderNotifList(){
+  const el=document.getElementById('notif-list');
+  const notifs=db._notifs||[];
+  if(!notifs.length){
+    el.innerHTML='<div class="notif-empty"><div class="nei">🔕</div><p>아직 알림이 없습니다.<br>학생들이 자료를 입력하면<br>여기에 알림이 표시됩니다.</p></div>';
+    return;
+  }
+  el.innerHTML=notifs.map(n=>`
+    <div class="notif-item ${n.read?'':'unread'}" onclick="markRead('${n.id}');openDetail(${n.studentNo})">
+      <div class="ni-icon ${NOTIF_ICON_CLASS[n.type]||'ni-univ'}">${NOTIF_ICON[n.type]||'📌'}</div>
+      <div style="flex:1;min-width:0">
+        <div class="ni-who">
+          <span style="color:${NOTIF_COLOR[n.type]||'var(--blue)'}">${n.studentNo}번 ${n.studentName}</span>
+          <span style="font-size:11px;font-weight:400;color:var(--text3);margin-left:6px">[${n.area}]</span>
+          ${!n.read?'<span style="font-size:10px;font-weight:700;color:var(--blue);background:rgba(30,77,183,.1);padding:1px 6px;border-radius:8px;margin-left:6px">NEW</span>':''}
+        </div>
+        <div class="ni-what">${n.summary}</div>
+        <div class="ni-when">⏰ ${n.ts}</div>
+      </div>
+    </div>`).join('');
+}
 
 // ══ ROUTING ══
 function navigate(to){
@@ -846,6 +974,7 @@ function doLogin(){
     if(pin!==TPW){setAErr('비밀번호가 올바르지 않습니다.');return;}
     navigate('teacher');history.replaceState(null,'','#teacher');
     renderOv();tTab('overview');
+    updateNotifBadge();
   } else {
     const sv=document.getElementById('auth-sel').value;
     if(!sv){setAErr('이름을 먼저 선택해 주세요.');return;}
@@ -1252,8 +1381,20 @@ function sSave(){
     });
   });
   const k=K(curSt);
+  const prevLen=(db[k].entries||[]).length;
   db[k].entries=entries;
-  db[k].memo=document.getElementById('s-memo-ta').value.trim();
+  const newMemo=document.getElementById('s-memo-ta').value.trim();
+  const prevMemo=db[k].memo||'';
+  db[k].memo=newMemo;
+  // 알림 로그
+  if(entries.length>0){
+    const univNames=entries.map(e=>e.university||'(미입력)').join(', ');
+    const action=prevLen===0?'처음 입력':'수정';
+    addNotif('univ',curSt.name,curSt.no,'희망 대학',`희망 대학 ${action} (${entries.length}개: ${univNames.length>30?univNames.slice(0,30)+'…':univNames})`);
+  }
+  if(newMemo && newMemo!==prevMemo){
+    addNotif('memo',curSt.name,curSt.no,'메모',`메모 ${prevMemo?'수정':'작성'}: "${newMemo.slice(0,40)}${newMemo.length>40?'…':''}"`);
+  }
   dbSave();toast('✅ 저장되었습니다!');
   setTimeout(()=>showSaved(entries),600);
 }
@@ -1280,7 +1421,9 @@ function gbSave(){
     const el=document.getElementById('gb-'+f);
     if(el) gb[f.replace(/-/g,'_')]=el.value.trim();
   });
-  db[K(curSt)].gb=gb;dbSave();toast('📋 생기부 분석이 저장되었습니다!');
+  db[K(curSt)].gb=gb;
+  addNotif('gb',curSt.name,curSt.no,'생기부 분석','생기부 분석 내용을 저장했습니다.');
+  dbSave();toast('📋 생기부 분석이 저장되었습니다!');
 }
 
 // ══ DIARY ══
@@ -1292,9 +1435,9 @@ function addDiary(){
   const entry={date:dt,content:ct,studentKey:K(curSt),studentName:curSt.name,studentNo:curSt.no};
   if(!db._diaries)db._diaries=[];
   db._diaries.push(entry);
-  // also in student record
   if(!db[K(curSt)].diaries)db[K(curSt)].diaries=[];
   db[K(curSt)].diaries.push({date:dt,content:ct});
+  addNotif('diary',curSt.name,curSt.no,'선행일지',`${dt} — "${ct.slice(0,45)}${ct.length>45?'…':''}"`);
   dbSave();
   document.getElementById('diary-content').value='';
   loadSDiary();toast('📔 선행일지가 등록되었습니다!');
@@ -1335,6 +1478,7 @@ function addPraise(){
   const entry={date:dt,targetNo:ts.no,targetName:ts.name,fromNo:curSt.no,fromName:curSt.name,content:ct};
   if(!db._praises)db._praises=[];
   db._praises.push(entry);
+  addNotif('praise',curSt.name,curSt.no,'칭찬하기',`${ts.name}을(를) 칭찬함 — "${ct.slice(0,40)}${ct.length>40?'…':''}"`);
   dbSave();
   document.getElementById('praise-content').value='';
   document.getElementById('praise-name').value='';
