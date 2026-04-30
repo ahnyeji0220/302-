@@ -6,6 +6,8 @@
 <title>3학년 2반 이노무 시키들의 기록</title>
 <link href="https://fonts.googleapis.com/css2?family=Gaegu:wght@300;400;700&family=Nanum+Gothic+Coding&family=Nanum+Gothic:wght@400;700;800&family=Jua&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 <style>
 :root{
   --navy:#1b4332;--navy2:#2d6a4f;--blue:#40916c;--blue2:#52b788;
@@ -971,31 +973,92 @@ const STUDENTS=[
 ];
 const LEVELS=['과도상향','상향','소신','적정','하향','과도하향'];
 const TYPES=['학생부종합','학생부교과','논술','실기/실적','수능(정시)'];
-const TPW='5678',DPW='1111',SK='daeip_3_2_v6';
+const TPW='5678',DPW='1111';
 let curRole='',curSt=null,curTSt=null,isFirst=false,eCount=0,curPage='home';
 let db={};
 let praiseChart=null;
 
+// ══ FIREBASE SETUP ══
+const firebaseConfig = {
+  apiKey: "AIzaSyB29b0Gqq5gJLSZspY77iSUyM1H9K2Xfu0",
+  authDomain: "diary-40cf1.firebaseapp.com",
+  databaseURL: "https://diary-40cf1-default-rtdb.firebaseio.com",
+  projectId: "diary-40cf1",
+  storageBucket: "diary-40cf1.firebasestorage.app",
+  messagingSenderId: "821489057058",
+  appId: "1:821489057058:web:be7bd39d742f728072f97b"
+};
+firebase.initializeApp(firebaseConfig);
+const fbdb = firebase.database();
+
 // ══ DB ══
-function dbLoad(){
-  const r=localStorage.getItem(SK);
-  db=r?JSON.parse(r):{};
-  STUDENTS.forEach(s=>{
-    const k=K(s);
-    if(!db[k]) db[k]={pw:DPW,changed:false,entries:[],memo:'',feedback:'',kcue:'',consults:[],gb:{},diaries:[],praises_sent:[]};
-    if(!db[k].consults) db[k].consults=[];
-    if(!db[k].gb) db[k].gb={};
-    if(!db[k].diaries) db[k].diaries=[];
-    if(!db[k].praises_sent) db[k].praises_sent=[];
-    if(!db[k].memo) db[k].memo='';
-    if(!db[k].kcue) db[k].kcue='';
-  });
-  if(!db._praises) db._praises=[];
-  if(!db._diaries) db._diaries=[];
-  if(!db._notifs) db._notifs=[];  // {id, type, studentName, studentNo, area, summary, ts, read}
+// db는 메모리 캐시. Firebase에서 로드 후 유지.
+function defaultStudent(){
+  return {pw:DPW,changed:false,entries:[],memo:'',feedback:'',kcue:'',consults:[],gb:{},diaries:[],sNotifs:[]};
 }
-function dbSave(){localStorage.setItem(SK,JSON.stringify(db));}
 function K(s){return`${s.no}_${s.name}`;}
+
+// Firebase에서 전체 데이터 로드
+async function dbLoad(){
+  showLoading(true);
+  try {
+    const snap = await fbdb.ref('/').once('value');
+    db = snap.val() || {};
+    // 각 학생 기본 구조 보장
+    STUDENTS.forEach(s=>{
+      const k=K(s);
+      if(!db[k]) db[k]=defaultStudent();
+      if(!db[k].consults) db[k].consults=[];
+      if(!db[k].gb) db[k].gb={};
+      if(!db[k].diaries) db[k].diaries=[];
+      if(!db[k].sNotifs) db[k].sNotifs=[];
+      if(db[k].memo===undefined) db[k].memo='';
+      if(!db[k].kcue) db[k].kcue='';
+      if(!db[k].changed) db[k].changed=false;
+      if(!db[k].pw) db[k].pw=DPW;
+    });
+    if(!db._praises) db._praises=[];
+    if(!db._diaries) db._diaries=[];
+    if(!db._notifs) db._notifs=[];
+  } catch(e) {
+    console.error('Firebase load error:', e);
+    toast('⚠️ 데이터 로드 실패. 네트워크를 확인해 주세요.');
+  }
+  showLoading(false);
+}
+
+// Firebase에 전체 저장 (debounce로 과도한 호출 방지)
+let saveTimer=null;
+function dbSave(){
+  clearTimeout(saveTimer);
+  saveTimer=setTimeout(()=>{
+    fbdb.ref('/').set(db).catch(e=>{
+      console.error('Firebase save error:',e);
+      toast('⚠️ 저장 실패. 네트워크를 확인해 주세요.');
+    });
+  }, 400);
+}
+
+// 특정 경로만 저장 (빠름)
+function dbSavePath(path, value){
+  fbdb.ref(path).set(value).catch(e=>{
+    console.error('Firebase save error:',e);
+    toast('⚠️ 저장 실패. 네트워크를 확인해 주세요.');
+  });
+}
+
+// 로딩 UI
+function showLoading(show){
+  let el=document.getElementById('loading-overlay');
+  if(!el){
+    el=document.createElement('div');
+    el.id='loading-overlay';
+    el.style.cssText='position:fixed;inset:0;background:rgba(27,67,50,.85);z-index:99999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;';
+    el.innerHTML='<div style="width:44px;height:44px;border:4px solid rgba(255,255,255,.2);border-top-color:#fff;border-radius:50%;animation:spin 1s linear infinite"></div><div style="color:#fff;font-size:15px;font-weight:600">데이터 불러오는 중...</div><style>@keyframes spin{to{transform:rotate(360deg)}}</style>';
+    document.body.appendChild(el);
+  }
+  el.style.display=show?'flex':'none';
+}
 
 // ══ NOTIFICATION SYSTEM ══
 function addNotif(type, studentName, studentNo, area, summary){
@@ -1927,9 +1990,11 @@ function openPdf(){
 }
 
 // INIT
-dbLoad();
-setUrlDisplay();
-handleHash();
+(async()=>{
+  setUrlDisplay();
+  await dbLoad();
+  handleHash();
+})();
 </script>
 </body>
 </html>
