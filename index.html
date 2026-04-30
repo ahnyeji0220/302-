@@ -1012,10 +1012,12 @@ async function dbLoad(){
       if(!db[k].gb) db[k].gb={};
       if(!db[k].diaries) db[k].diaries=[];
       if(!db[k].sNotifs) db[k].sNotifs=[];
+      if(!db[k].entries) db[k].entries=[];
       if(db[k].memo===undefined) db[k].memo='';
       if(!db[k].kcue) db[k].kcue='';
       if(!db[k].changed) db[k].changed=false;
       if(!db[k].pw) db[k].pw=DPW;
+      if(!db[k].feedback) db[k].feedback='';
     });
     if(!db._praises) db._praises=[];
     if(!db._diaries) db._diaries=[];
@@ -1286,10 +1288,15 @@ function dSubTab(t){
 function renderOv(){
   const g=document.getElementById('ov-grid');g.innerHTML='';
   STUDENTS.forEach(s=>{
-    const k=K(s),d=db[k];
+    const k=K(s);
+    if(!db[k]) db[k]=defaultStudent();
+    const d=db[k];
+    if(!d.entries) d.entries=[];
+    if(!d.consults) d.consults=[];
+    if(!d.diaries) d.diaries=[];
     const hasDt=d.entries.length>0,hasFb=d.feedback&&d.feedback.trim();
     const dot=hasDt?(hasFb?'fb':'data'):'';
-    const cCnt=d.consults.length,diCnt=d.diaries?d.diaries.length:0;
+    const cCnt=d.consults.length,diCnt=d.diaries.length;
     g.innerHTML+=`<div class="ov-card" onclick="openDetail(${s.no})">
       <div class="ov-top"><span class="ov-num">${s.no}번</span><span class="ov-dot ${dot}"></span></div>
       <div class="ov-name">${s.name}</div>
