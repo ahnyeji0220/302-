@@ -664,12 +664,12 @@ body{font-family:'Nanum Gothic',sans-serif;color:var(--text);}
       <div class="tab-pane" id="dtp-fb">
         <div class="card">
           <div class="card-h">교사 피드백</div>
-          <textarea class="fb-ta" id="d-fb" placeholder="학생의 대입 전략에 대한 피드백..."></textarea>
+          <textarea class="fb-ta" id="d-fb" oninput="scheduleDraft('fb')" placeholder="학생의 대입 전략에 대한 피드백..."></textarea>
           <button class="btn-sm" style="margin-top:9px" onclick="saveFb()">피드백 저장</button>
         </div>
         <div class="card">
           <div class="card-h">대교협 기준 <span class="teacher-only-badge">🔒 교사 전용</span></div>
-          <textarea class="fb-ta" id="d-kcue" placeholder="대교협 기준 분석 내용을 입력하세요..."></textarea>
+          <textarea class="fb-ta" id="d-kcue" oninput="scheduleDraft('kcue')" placeholder="대교협 기준 분석 내용을 입력하세요..."></textarea>
           <button class="btn-sm" style="margin-top:9px" onclick="saveKcue()">저장</button>
         </div>
         <div class="card">
@@ -678,7 +678,7 @@ body{font-family:'Nanum Gothic',sans-serif;color:var(--text);}
           <div class="ac-form">
             <div class="ac-form-title">새 상담 기록 추가</div>
             <input type="date" class="ac-date" id="ac-date">
-            <textarea class="ac-ta" id="ac-ta" placeholder="상담 내용..."></textarea>
+            <textarea class="ac-ta" id="ac-ta" oninput="scheduleDraft('ac')" placeholder="상담 내용..."></textarea>
             <div style="margin-top:9px"><button class="btn-sm btn-teal" onclick="addConsult()">기록 추가</button></div>
           </div>
         </div>
@@ -809,7 +809,7 @@ body{font-family:'Nanum Gothic',sans-serif;color:var(--text);}
           <div class="card-h">📝 나의 메모</div>
           <div class="fg">
             <label>하고 싶은 말, 본인 피드백, 걱정되는 것 등 자유롭게 적어보세요</label>
-            <textarea id="s-memo-ta" placeholder="예) 논술 준비가 걱정돼요. 면접 언제부터 준비해야 할까요?" style="min-height:90px"></textarea>
+            <textarea id="s-memo-ta" oninput="scheduleDraft('memo')" placeholder="예) 논술 준비가 걱정돼요. 면접 언제부터 준비해야 할까요?" style="min-height:90px"></textarea>
           </div>
         </div>
         <button class="btn-submit" onclick="sSave()">저장하기</button>
@@ -835,13 +835,13 @@ body{font-family:'Nanum Gothic',sans-serif;color:var(--text);}
         <div class="gb-section">
           <div class="gb-sec-head">자율활동</div>
           <div class="gb-sec-body">
-            <div class="fg"><label>1학년 — 주제/키워드</label><textarea id="gb-ja1-topic" placeholder="활동 주제와 키워드..." style="min-height:60px"></textarea></div>
-            <div class="fg"><label>1학년 — 드러난 역량</label><textarea id="gb-ja1-skill" placeholder="드러난 역량..." style="min-height:60px"></textarea></div>
-            <div class="fg"><label>2학년 — 주제/키워드</label><textarea id="gb-ja2-topic" placeholder="활동 주제와 키워드..." style="min-height:60px"></textarea></div>
-            <div class="fg"><label>2학년 — 드러난 역량</label><textarea id="gb-ja2-skill" placeholder="드러난 역량..." style="min-height:60px"></textarea></div>
-            <div class="fg sp2"><label>가장 의미 있었던 활동</label><textarea id="gb-ja-best" placeholder="..." style="min-height:60px"></textarea></div>
-            <div class="fg sp2"><label>아쉬웠거나 부족한 부분</label><textarea id="gb-ja-lack" placeholder="..." style="min-height:60px"></textarea></div>
-            <div class="fg sp2"><label>3학년에 보완하고 싶은 것 (역량·주제 포함)</label><textarea id="gb-ja-plan" placeholder="..." style="min-height:60px"></textarea></div>
+            <div class="fg"><label>1학년 — 주제/키워드</label><textarea id="gb-ja1-topic" placeholder="활동 주제와 키워드..." style="min-height:60px" oninput="scheduleDraft('gb')"></textarea></div>
+            <div class="fg"><label>1학년 — 드러난 역량</label><textarea id="gb-ja1-skill" placeholder="드러난 역량..." style="min-height:60px" oninput="scheduleDraft('gb')"></textarea></div>
+            <div class="fg"><label>2학년 — 주제/키워드</label><textarea id="gb-ja2-topic" placeholder="활동 주제와 키워드..." style="min-height:60px" oninput="scheduleDraft('gb')"></textarea></div>
+            <div class="fg"><label>2학년 — 드러난 역량</label><textarea id="gb-ja2-skill" placeholder="드러난 역량..." style="min-height:60px" oninput="scheduleDraft('gb')"></textarea></div>
+            <div class="fg sp2"><label>가장 의미 있었던 활동</label><textarea id="gb-ja-best" placeholder="..." style="min-height:60px" oninput="scheduleDraft('gb')"></textarea></div>
+            <div class="fg sp2"><label>아쉬웠거나 부족한 부분</label><textarea id="gb-ja-lack" placeholder="..." style="min-height:60px" oninput="scheduleDraft('gb')"></textarea></div>
+            <div class="fg sp2"><label>3학년에 보완하고 싶은 것 (역량·주제 포함)</label><textarea id="gb-ja-plan" placeholder="..." style="min-height:60px" oninput="scheduleDraft('gb')"></textarea></div>
           </div>
         </div>
 
@@ -849,13 +849,13 @@ body{font-family:'Nanum Gothic',sans-serif;color:var(--text);}
         <div class="gb-section">
           <div class="gb-sec-head">진로활동</div>
           <div class="gb-sec-body">
-            <div class="fg"><label>1학년 — 주제/키워드</label><textarea id="gb-jr1-topic" placeholder="..." style="min-height:60px"></textarea></div>
-            <div class="fg"><label>1학년 — 드러난 역량</label><textarea id="gb-jr1-skill" placeholder="..." style="min-height:60px"></textarea></div>
-            <div class="fg"><label>2학년 — 주제/키워드</label><textarea id="gb-jr2-topic" placeholder="..." style="min-height:60px"></textarea></div>
-            <div class="fg"><label>2학년 — 드러난 역량</label><textarea id="gb-jr2-skill" placeholder="..." style="min-height:60px"></textarea></div>
-            <div class="fg sp2"><label>가장 의미 있었던 활동</label><textarea id="gb-jr-best" placeholder="..." style="min-height:60px"></textarea></div>
-            <div class="fg sp2"><label>아쉬웠거나 부족한 부분</label><textarea id="gb-jr-lack" placeholder="..." style="min-height:60px"></textarea></div>
-            <div class="fg sp2"><label>3학년에 보완하고 싶은 것</label><textarea id="gb-jr-plan" placeholder="..." style="min-height:60px"></textarea></div>
+            <div class="fg"><label>1학년 — 주제/키워드</label><textarea id="gb-jr1-topic" placeholder="..." style="min-height:60px" oninput="scheduleDraft('gb')"></textarea></div>
+            <div class="fg"><label>1학년 — 드러난 역량</label><textarea id="gb-jr1-skill" placeholder="..." style="min-height:60px" oninput="scheduleDraft('gb')"></textarea></div>
+            <div class="fg"><label>2학년 — 주제/키워드</label><textarea id="gb-jr2-topic" placeholder="..." style="min-height:60px" oninput="scheduleDraft('gb')"></textarea></div>
+            <div class="fg"><label>2학년 — 드러난 역량</label><textarea id="gb-jr2-skill" placeholder="..." style="min-height:60px" oninput="scheduleDraft('gb')"></textarea></div>
+            <div class="fg sp2"><label>가장 의미 있었던 활동</label><textarea id="gb-jr-best" placeholder="..." style="min-height:60px" oninput="scheduleDraft('gb')"></textarea></div>
+            <div class="fg sp2"><label>아쉬웠거나 부족한 부분</label><textarea id="gb-jr-lack" placeholder="..." style="min-height:60px" oninput="scheduleDraft('gb')"></textarea></div>
+            <div class="fg sp2"><label>3학년에 보완하고 싶은 것</label><textarea id="gb-jr-plan" placeholder="..." style="min-height:60px" oninput="scheduleDraft('gb')"></textarea></div>
           </div>
         </div>
 
@@ -863,13 +863,13 @@ body{font-family:'Nanum Gothic',sans-serif;color:var(--text);}
         <div class="gb-section">
           <div class="gb-sec-head">동아리활동</div>
           <div class="gb-sec-body">
-            <div class="fg"><label>1학년 — 주제/키워드</label><textarea id="gb-cl1-topic" placeholder="..." style="min-height:60px"></textarea></div>
-            <div class="fg"><label>1학년 — 드러난 역량</label><textarea id="gb-cl1-skill" placeholder="..." style="min-height:60px"></textarea></div>
-            <div class="fg"><label>2학년 — 주제/키워드</label><textarea id="gb-cl2-topic" placeholder="..." style="min-height:60px"></textarea></div>
-            <div class="fg"><label>2학년 — 드러난 역량</label><textarea id="gb-cl2-skill" placeholder="..." style="min-height:60px"></textarea></div>
-            <div class="fg sp2"><label>가장 의미 있었던 활동</label><textarea id="gb-cl-best" placeholder="..." style="min-height:60px"></textarea></div>
-            <div class="fg sp2"><label>아쉬웠거나 부족한 부분</label><textarea id="gb-cl-lack" placeholder="..." style="min-height:60px"></textarea></div>
-            <div class="fg sp2"><label>3학년에 보완하고 싶은 것</label><textarea id="gb-cl-plan" placeholder="..." style="min-height:60px"></textarea></div>
+            <div class="fg"><label>1학년 — 주제/키워드</label><textarea id="gb-cl1-topic" placeholder="..." style="min-height:60px" oninput="scheduleDraft('gb')"></textarea></div>
+            <div class="fg"><label>1학년 — 드러난 역량</label><textarea id="gb-cl1-skill" placeholder="..." style="min-height:60px" oninput="scheduleDraft('gb')"></textarea></div>
+            <div class="fg"><label>2학년 — 주제/키워드</label><textarea id="gb-cl2-topic" placeholder="..." style="min-height:60px" oninput="scheduleDraft('gb')"></textarea></div>
+            <div class="fg"><label>2학년 — 드러난 역량</label><textarea id="gb-cl2-skill" placeholder="..." style="min-height:60px" oninput="scheduleDraft('gb')"></textarea></div>
+            <div class="fg sp2"><label>가장 의미 있었던 활동</label><textarea id="gb-cl-best" placeholder="..." style="min-height:60px" oninput="scheduleDraft('gb')"></textarea></div>
+            <div class="fg sp2"><label>아쉬웠거나 부족한 부분</label><textarea id="gb-cl-lack" placeholder="..." style="min-height:60px" oninput="scheduleDraft('gb')"></textarea></div>
+            <div class="fg sp2"><label>3학년에 보완하고 싶은 것</label><textarea id="gb-cl-plan" placeholder="..." style="min-height:60px" oninput="scheduleDraft('gb')"></textarea></div>
           </div>
         </div>
 
@@ -877,11 +877,11 @@ body{font-family:'Nanum Gothic',sans-serif;color:var(--text);}
         <div class="gb-section">
           <div class="gb-sec-head">교과 세부능력특기사항</div>
           <div class="gb-sec-body">
-            <div class="fg sp2"><label>1학년 — 활동 내용/키워드</label><textarea id="gb-sub1" placeholder="과목별 키워드와 활동 내용..." style="min-height:80px"></textarea></div>
-            <div class="fg sp2"><label>1학년 — 드러난 역량</label><textarea id="gb-sub1-skill" placeholder="드러난 역량..." style="min-height:60px"></textarea></div>
-            <div class="fg sp2"><label>2학년 — 활동 내용/키워드</label><textarea id="gb-sub2" placeholder="과목별 키워드와 활동 내용..." style="min-height:80px"></textarea></div>
-            <div class="fg sp2"><label>2학년 — 드러난 역량</label><textarea id="gb-sub2-skill" placeholder="드러난 역량..." style="min-height:60px"></textarea></div>
-            <div class="fg sp2"><label>3학년 — 활동 계획 · 드러낼 역량</label><textarea id="gb-sub3" placeholder="3학년 활동 계획과 드러낼 역량..." style="min-height:80px"></textarea></div>
+            <div class="fg sp2"><label>1학년 — 활동 내용/키워드</label><textarea id="gb-sub1" placeholder="과목별 키워드와 활동 내용..." style="min-height:80px" oninput="scheduleDraft('gb')"></textarea></div>
+            <div class="fg sp2"><label>1학년 — 드러난 역량</label><textarea id="gb-sub1-skill" placeholder="드러난 역량..." style="min-height:60px" oninput="scheduleDraft('gb')"></textarea></div>
+            <div class="fg sp2"><label>2학년 — 활동 내용/키워드</label><textarea id="gb-sub2" placeholder="과목별 키워드와 활동 내용..." style="min-height:80px" oninput="scheduleDraft('gb')"></textarea></div>
+            <div class="fg sp2"><label>2학년 — 드러난 역량</label><textarea id="gb-sub2-skill" placeholder="드러난 역량..." style="min-height:60px" oninput="scheduleDraft('gb')"></textarea></div>
+            <div class="fg sp2"><label>3학년 — 활동 계획 · 드러낼 역량</label><textarea id="gb-sub3" placeholder="3학년 활동 계획과 드러낼 역량..." style="min-height:80px" oninput="scheduleDraft('gb')"></textarea></div>
           </div>
         </div>
 
@@ -891,7 +891,7 @@ body{font-family:'Nanum Gothic',sans-serif;color:var(--text);}
           <div class="gb-sec-body">
             <div class="fg sp2">
               <label>탐구 동기 → 주제 → 내용 → 결론 → 느낀점 → 향상된 것 → 참고문헌 순으로 작성</label>
-              <textarea id="gb-story" placeholder='예) "00 동기를 바탕으로 이번 탐구를 통해 영미 문학 속 사회적 맥락을 분석하였고..."' style="min-height:120px"></textarea>
+              <textarea id="gb-story" placeholder='예) "00 동기를 바탕으로 이번 탐구를 통해 영미 문학 속 사회적 맥락을 분석하였고..."' style="min-height:120px" oninput="scheduleDraft('gb')"></textarea>
             </div>
           </div>
         </div>
@@ -919,7 +919,7 @@ body{font-family:'Nanum Gothic',sans-serif;color:var(--text);}
         </div>
         <div class="fg">
           <label>오늘 있었던 일</label>
-          <textarea id="diary-content" placeholder="오늘 있었던 선행을 자유롭게 적어주세요!" style="min-height:100px"></textarea>
+          <textarea id="diary-content" oninput="scheduleDraft('diary')" placeholder="오늘 있었던 선행을 자유롭게 적어주세요!" style="min-height:100px"></textarea>
         </div>
         <button class="btn-submit" onclick="addDiary()">일지 등록하기</button>
       </div>
@@ -946,7 +946,7 @@ body{font-family:'Nanum Gothic',sans-serif;color:var(--text);}
         </div>
         <div class="fg">
           <label>칭찬 내용</label>
-          <textarea id="praise-content" placeholder="어떤 점이 좋았나요? 어떤 행동이 멋졌나요? 자유롭게 적어주세요 💕" style="min-height:90px"></textarea>
+          <textarea id="praise-content" oninput="scheduleDraft('praise')" placeholder="어떤 점이 좋았나요? 어떤 행동이 멋졌나요? 자유롭게 적어주세요 💕" style="min-height:90px"></textarea>
         </div>
         <button class="btn-submit" style="background:linear-gradient(135deg,var(--pink),#c0487a)" onclick="addPraise()">칭찬 등록하기 ♥</button>
       </div>
@@ -1237,8 +1237,6 @@ async function dbLoad(){
     if(!db._praises) db._praises=[];
     if(!db._diaries) db._diaries=[];
     if(!db._notifs) db._notifs=[];
-    if(!db._bookings) db._bookings={};
-    if(!db._closedDates) db._closedDates={};
   } catch(e) {
     console.error('Firebase load error:', e);
     toast('⚠️ 데이터 로드 실패. 네트워크를 확인해 주세요.');
@@ -1282,8 +1280,6 @@ function showLoading(show){
 // ══ NOTIFICATION SYSTEM ══
 function addNotif(type, studentName, studentNo, area, summary){
   if(!db._notifs) db._notifs=[];
-  if(!db._bookings) db._bookings={};
-  if(!db._closedDates) db._closedDates={};
   const notif={
     id: Date.now()+'_'+Math.random().toString(36).slice(2,6),
     type,         // 'univ'|'gb'|'diary'|'praise'|'memo'
@@ -1637,7 +1633,7 @@ function renderCalGrid(year,month,gridId,titleId,clickFn){
       inner+=SLOTS.map((s,si)=>{
         const b=dayBookings[si];
         if(!b) return `<div class="cal-slot open">✓ ${si===0?'1타임':'2타임'} 예약가능</div>`;
-        if(b.type==='closed') return `<div class="cal-slot booked-other">${si===0?'1타임':'2타임'} 예약불가</div>`;const isMe=curSt&&b.studentNo===curSt.no;
+        const isMe=curSt&&b.studentNo===curSt.no;
         if(isMe) return `<div class="cal-slot booked-me">✓ 내 예약 (${si===0?'1타임':'2타임'})</div>`;
         return curRole==='teacher'
           ?`<div class="cal-slot booked-other">${b.studentName} (${si===0?'1타임':'2타임'})</div>`
@@ -2084,6 +2080,11 @@ function openDetail(no){
   // feedback
   document.getElementById('d-fb').value=d.feedback||'';
   document.getElementById('d-kcue').value=d.kcue||'';
+  setTimeout(()=>{
+    restoreDraft('fb',data=>{const el=document.getElementById('d-fb');if(el)el.value=data;});
+    restoreDraft('kcue',data=>{const el=document.getElementById('d-kcue');if(el)el.value=data;});
+    restoreDraft('ac',data=>{const el=document.getElementById('ac-ta');if(el)el.value=data;});
+  },300);
   renderClist(k);
   document.getElementById('ac-date').value=new Date().toISOString().split('T')[0];
   tTab('detail');dSubTab('univ');
@@ -2196,7 +2197,7 @@ function saveFb(){
   if(next && next!==prev){
     addSNotif(curTSt.no,'feedback',`선생님이 피드백을 ${prev?'수정':'작성'}했습니다 — "${next.slice(0,40)}${next.length>40?'…':''}"`);
   }
-  dbSave();renderOv();toast('💬 피드백이 저장되었습니다.');
+  dbSave();clearDraft('fb');renderOv();toast('💬 피드백이 저장되었습니다.');
 }
 function saveKcue(){
   if(!curTSt)return;
@@ -2221,7 +2222,7 @@ function addConsult(){
   // 학생 알림
   addSNotif(curTSt.no,'consult',`${dt} 상담 기록이 추가됐어요 — "${ct.slice(0,40)}${ct.length>40?'…':''}"`);
   dbSave();renderClist(k);renderOv();
-  document.getElementById('ac-ta').value='';toast('📝 상담 기록이 추가되었습니다.');
+  document.getElementById('ac-ta').value='';clearDraft('ac');toast('📝 상담 기록이 추가되었습니다.');
 }
 function delConsult(k,i){
   if(!confirm('삭제할까요?'))return;
@@ -2333,6 +2334,17 @@ function sTab(t){
   if(t==='praiseboard') loadPraiseBoard();
   if(t==='feedback') loadFb();
   if(t==='calendar') renderSCal();
+  if(t==='gb') loadGb();
+  // 탭 진입 시 임시저장 복원
+  if(t==='memo') setTimeout(()=>restoreDraft('memo',data=>{
+    const el=document.getElementById('s-memo-ta');if(el)el.value=data;
+  }),300);
+  if(t==='diary') setTimeout(()=>restoreDraft('diary',data=>{
+    const el=document.getElementById('diary-content');if(el)el.value=data;
+  }),300);
+  if(t==='praise') setTimeout(()=>restoreDraft('praise',data=>{
+    const el=document.getElementById('praise-content');if(el)el.value=data;
+  }),300);
 }
 function loadInput(){
   const d=db[K(curSt)];
@@ -2398,6 +2410,9 @@ function showForm(){
   const entries=db[K(curSt)].entries;
   entries.length?entries.forEach(e=>addEntry(e)):addEntry();
   document.getElementById('s-memo-ta').value=db[K(curSt)].memo||'';
+  setTimeout(()=>restoreDraft('memo',data=>{
+    const el=document.getElementById('s-memo-ta');if(el)el.value=data;
+  }),300);
 }
 function addEntry(d){
   eCount++;const id=eCount,e=d||{};
@@ -2529,7 +2544,78 @@ function loadGb(){
     const el=document.getElementById('gb-'+f);
     if(el) el.value=gb[f.replace(/-/g,'_')]||'';
   });
+  // 임시저장 복원
+  setTimeout(()=>restoreDraft('gb', data=>{
+    fields.forEach(f=>{
+      const el=document.getElementById('gb-'+f);
+      if(el&&data[f]!==undefined) el.value=data[f];
+    });
+  }),300);
 }
+// ══ 자동 임시저장 (localStorage) ══
+const GB_FIELDS=['ja1-topic','ja1-skill','ja2-topic','ja2-skill','ja-best','ja-lack','ja-plan',
+  'jr1-topic','jr1-skill','jr2-topic','jr2-skill','jr-best','jr-lack','jr-plan',
+  'cl1-topic','cl1-skill','cl2-topic','cl2-skill','cl-best','cl-lack','cl-plan',
+  'sub1','sub1-skill','sub2','sub2-skill','sub3','story','dept','ability'];
+
+let _draftTimer=null;
+function scheduleDraft(tag){
+  clearTimeout(_draftTimer);
+  _draftTimer=setTimeout(()=>saveDraft(tag),800);
+}
+
+function draftKey(tag){ return curSt?`draft_${tag}_${curSt.no}`:null; }
+
+function saveDraft(tag){
+  if(!curSt) return;
+  const key=draftKey(tag);
+  if(!key) return;
+  let data=null;
+  if(tag==='gb'){
+    data={};
+    GB_FIELDS.forEach(f=>{const el=document.getElementById('gb-'+f);if(el)data[f]=el.value;});
+  } else if(tag==='memo'){
+    const el=document.getElementById('s-memo-ta');
+    if(el) data=el.value;
+  } else if(tag==='diary'){
+    const el=document.getElementById('diary-content');
+    if(el) data=el.value;
+  } else if(tag==='praise'){
+    const el=document.getElementById('praise-content');
+    if(el) data=el.value;
+  } else if(tag==='fb'){
+    const el=document.getElementById('d-fb');
+    if(el) data=el.value;
+  } else if(tag==='kcue'){
+    const el=document.getElementById('d-kcue');
+    if(el) data=el.value;
+  } else if(tag==='ac'){
+    const el=document.getElementById('ac-ta');
+    if(el) data=el.value;
+  }
+  if(data!==null) localStorage.setItem(key, JSON.stringify({data,ts:Date.now()}));
+}
+
+function clearDraft(tag){
+  const key=draftKey(tag);
+  if(key) localStorage.removeItem(key);
+}
+
+function restoreDraft(tag, applyFn){
+  const key=draftKey(tag);
+  if(!key) return;
+  const raw=localStorage.getItem(key);
+  if(!raw) return;
+  try{
+    const {data,ts}=JSON.parse(raw);
+    const min=Math.floor((Date.now()-ts)/60000);
+    const timeStr=min<1?'방금':min<60?`${min}분 전`:`${Math.floor(min/60)}시간 전`;
+    const ok=confirm(`💾 ${timeStr}에 작성하다 중단된 내용이 있어요.\n불러올까요?\n(취소하면 임시저장이 삭제됩니다)`);
+    if(ok){ applyFn(data); toast('✅ 임시저장된 내용을 불러왔습니다!'); }
+    else { localStorage.removeItem(key); }
+  } catch(e){ localStorage.removeItem(key); }
+}
+
 function gbSave(){
   const gb={};
   const fields=['ja1-topic','ja1-skill','ja2-topic','ja2-skill','ja-best','ja-lack','ja-plan',
@@ -2542,7 +2628,7 @@ function gbSave(){
   });
   db[K(curSt)].gb=gb;
   addNotif('gb',curSt.name,curSt.no,'생기부 분석','생기부 분석 내용을 저장했습니다.');
-  dbSave();toast('📋 생기부 분석이 저장되었습니다!');
+  dbSave();clearDraft('gb');toast('📋 생기부 분석이 저장되었습니다!');
 }
 
 // ══ DIARY ══
@@ -2558,7 +2644,7 @@ function addDiary(){
   db[K(curSt)].diaries.push({date:dt,content:ct});
   addNotif('diary',curSt.name,curSt.no,'선행일지',`${dt} — "${ct.slice(0,45)}${ct.length>45?'…':''}"`);
   dbSave();
-  document.getElementById('diary-content').value='';
+  document.getElementById('diary-content').value='';clearDraft('diary');
   loadSDiary();toast('📔 선행일지가 등록되었습니다!');
 }
 function loadSDiary(){
@@ -2601,7 +2687,7 @@ function addPraise(){
   // 칭찬받은 학생에게 알림
   addSNotif(ts.no,'praise',`누군가 나를 칭찬해줬어요 💕 — "${ct.slice(0,40)}${ct.length>40?'…':''}"`);
   dbSave();
-  document.getElementById('praise-content').value='';
+  document.getElementById('praise-content').value='';clearDraft('praise');
   document.getElementById('praise-name').value='';
   loadSPraise();toast('♥ 칭찬이 등록되었습니다!');
 }
