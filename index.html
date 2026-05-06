@@ -1619,10 +1619,8 @@ function renderCalGrid(year,month,gridId,titleId,clickFn){
           :`<div class="cal-slot booked-other">예약됨 (${si===0?'1타임':'2타임'})</div>`;
       }).join('');
     }
-    const isTeacher=clickFn==='tCalClick';
-    // 교사: 주말/공휴일만 차단 (학교일정/마감날은 관리 가능)
-    // 학생: 주말/공휴일/상담불가 모두 차단
-    const isBlocked=isTeacher?(isWeekend||isHoliday):(isWeekend||isHoliday||noConsult);
+    // 주말/공휴일/학교일정/마감 모두 차단 (교사/학생 동일)
+    const isBlocked=isWeekend||isHoliday||noConsult;
     html+=`<div class="${cls}"${isBlocked?'':` onclick="${clickFn}('${dk}')"`}>
       <div class="cal-date">${d}</div>
       ${extraBadge}
