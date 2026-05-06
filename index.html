@@ -1633,6 +1633,7 @@ function renderCalGrid(year,month,gridId,titleId,clickFn){
       inner+=SLOTS.map((s,si)=>{
         const b=dayBookings[si];
         if(!b) return `<div class="cal-slot open">✓ ${si===0?'1타임':'2타임'} 예약가능</div>`;
+        if(b.type==='closed') return `<div class="cal-slot booked-other">${si===0?'1타임':'2타임'} 예약마감</div>`;
         const isMe=curSt&&b.studentNo===curSt.no;
         if(isMe) return `<div class="cal-slot booked-me">✓ 내 예약 (${si===0?'1타임':'2타임'})</div>`;
         return curRole==='teacher'
