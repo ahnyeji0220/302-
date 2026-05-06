@@ -1638,7 +1638,7 @@ function renderCalGrid(year,month,gridId,titleId,clickFn){
         if(isMe) return `<div class="cal-slot booked-me">✓ 내 예약 (${si===0?'1타임':'2타임'})</div>`;
         return curRole==='teacher'
           ?`<div class="cal-slot booked-other">${b.studentName} (${si===0?'1타임':'2타임'})</div>`
-          :`<div class="cal-slot booked-other">예약됨 (${si===0?'1타임':'2타임'})</div>`;
+          :`<div class="cal-slot booked-other">${b.studentName} (${si===0?'1타임':'2타임'})</div>`;
       }).join('');
     }
 
