@@ -443,8 +443,9 @@ body{font-family:'Nanum Gothic',sans-serif;color:var(--text);}
 }
 
 /* ── 공휴일/학교일정 캘린더 스타일 ── */
-.cal-cell.no-consult{background:rgba(214,48,48,.04);cursor:not-allowed;pointer-events:none;}
+.cal-cell.no-consult{background:rgba(214,48,48,.03);cursor:not-allowed;pointer-events:none;opacity:.75;}
 .cal-cell.no-consult:hover{border-color:var(--border);box-shadow:none;}
+.cal-event.vacation{background:rgba(255,152,0,.13);color:#c45200;}
 .cal-event{font-size:9px;font-weight:700;padding:2px 5px;border-radius:4px;margin-bottom:2px;line-height:1.4;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .cal-event.holiday{background:rgba(214,48,48,.12);color:#b02020;}
 .cal-event.school-ev{background:rgba(30,77,183,.1);color:#1e4db7;}
@@ -735,6 +736,8 @@ body{font-family:'Nanum Gothic',sans-serif;color:var(--text);}
           <span style="font-size:11px;background:rgba(30,77,183,.08);border-radius:10px;padding:3px 10px;color:#1e4db7">📝 7/8 전국연합학력평가</span>
           <span style="font-size:11px;background:rgba(214,48,48,.08);border-radius:10px;padding:3px 10px;color:#c03030">🚫 7/20 상담 없음</span>
           <span style="font-size:11px;background:rgba(30,77,183,.08);border-radius:10px;padding:3px 10px;color:#1e4db7">🏖️ 7/21 방학식</span>
+          <span style="font-size:11px;background:rgba(255,152,0,.12);border-radius:10px;padding:3px 10px;color:#e65100">🏖️ 7/22~8/17 방학 (상담 없음)</span>
+          <span style="font-size:11px;background:rgba(30,77,183,.08);border-radius:10px;padding:3px 10px;color:#1e4db7">🏫 8/18 개학</span>
         </div>
       </div>
       <div class="cal-wrap">
@@ -1547,7 +1550,35 @@ const SCHOOL_EVENTS={
   '2025-07-03':{label:'2차 정기시험',icon:'📚',noConsult:true},
   '2025-07-08':{label:'전국연합학력평가',icon:'📝',noConsult:true},
   '2025-07-20':{label:'상담 없음',icon:'🚫',noConsult:true},
-  '2025-07-21':{label:'방학식',icon:'🏖️',noConsult:true}
+  '2025-07-21':{label:'방학식',icon:'🏖️',noConsult:true},
+  '2025-07-22':{label:'방학',icon:'🏖️',noConsult:true},
+  '2025-07-23':{label:'방학',icon:'🏖️',noConsult:true},
+  '2025-07-24':{label:'방학',icon:'🏖️',noConsult:true},
+  '2025-07-25':{label:'방학',icon:'🏖️',noConsult:true},
+  '2025-07-26':{label:'방학',icon:'🏖️',noConsult:true},
+  '2025-07-27':{label:'방학',icon:'🏖️',noConsult:true},
+  '2025-07-28':{label:'방학',icon:'🏖️',noConsult:true},
+  '2025-07-29':{label:'방학',icon:'🏖️',noConsult:true},
+  '2025-07-30':{label:'방학',icon:'🏖️',noConsult:true},
+  '2025-07-31':{label:'방학',icon:'🏖️',noConsult:true},
+  '2025-08-01':{label:'방학',icon:'🏖️',noConsult:true},
+  '2025-08-02':{label:'방학',icon:'🏖️',noConsult:true},
+  '2025-08-03':{label:'방학',icon:'🏖️',noConsult:true},
+  '2025-08-04':{label:'방학',icon:'🏖️',noConsult:true},
+  '2025-08-05':{label:'방학',icon:'🏖️',noConsult:true},
+  '2025-08-06':{label:'방학',icon:'🏖️',noConsult:true},
+  '2025-08-07':{label:'방학',icon:'🏖️',noConsult:true},
+  '2025-08-08':{label:'방학',icon:'🏖️',noConsult:true},
+  '2025-08-09':{label:'방학',icon:'🏖️',noConsult:true},
+  '2025-08-10':{label:'방학',icon:'🏖️',noConsult:true},
+  '2025-08-11':{label:'방학',icon:'🏖️',noConsult:true},
+  '2025-08-12':{label:'방학',icon:'🏖️',noConsult:true},
+  '2025-08-13':{label:'방학',icon:'🏖️',noConsult:true},
+  '2025-08-14':{label:'방학',icon:'🏖️',noConsult:true},
+  '2025-08-15':{label:'방학',icon:'🏖️',noConsult:true},
+  '2025-08-16':{label:'방학',icon:'🏖️',noConsult:true},
+  '2025-08-17':{label:'방학',icon:'🏖️',noConsult:true},
+  '2025-08-18':{label:'개학',icon:'🏫',noConsult:false}
 };
 
 function getHoliday(dk){return HOLIDAYS[dk]||null;}
@@ -1599,14 +1630,16 @@ function renderCalGrid(year,month,gridId,titleId,clickFn){
 
     let extraBadge='';
     if(isHoliday) extraBadge+=`<div class="cal-event holiday">🎌 ${getHoliday(dk)}</div>`;
-    if(schoolEv) extraBadge+=`<div class="cal-event school-ev">${schoolEv.icon} ${schoolEv.label}</div>`;
-    else if(isClosed&&!schoolEv&&!isHoliday) extraBadge+=`<div class="cal-event closed-ev">🔒 마감</div>`;
+    if(schoolEv){
+      const evCls=schoolEv.label==='방학'?'vacation':'school-ev';
+      extraBadge+=`<div class="cal-event ${evCls}">${schoolEv.icon} ${schoolEv.label}</div>`;
+    } else if(isClosed&&!isHoliday) extraBadge+=`<div class="cal-event closed-ev">🔒 마감</div>`;
 
     let slotHtml='';
     if(isWeekend||isHoliday){
       slotHtml='';
     } else if(noConsult){
-      slotHtml='<div class="cal-slot no-consult-slot">🚫 상담 불가</div>';
+      slotHtml='';
     } else {
       slotHtml=SLOTS.map((s,si)=>{
         const b=dayBookings[si];
