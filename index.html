@@ -327,6 +327,72 @@ body{font-family:'Nanum Gothic',sans-serif;color:var(--text);}
 .toast{position:fixed;bottom:26px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--navy);color:#fff;padding:12px 24px;border-radius:30px;font-size:14px;font-weight:500;box-shadow:var(--shl);transition:transform .3s cubic-bezier(.34,1.56,.64,1);z-index:9999;white-space:nowrap;pointer-events:none;}
 .toast.show{transform:translateX(-50%) translateY(0);}
 
+/* ── CALENDAR ── */
+.cal-wrap{background:#fff;border-radius:var(--r);box-shadow:var(--sh);padding:24px;margin-bottom:16px;}
+.cal-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;}
+.cal-title{font-size:17px;font-weight:700;color:var(--navy);}
+.cal-nav{display:flex;gap:6px;}
+.btn-cal-nav{width:34px;height:34px;border:1.5px solid var(--border);border-radius:8px;background:#fff;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s;}
+.btn-cal-nav:hover{border-color:var(--blue);color:var(--blue);}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;}
+.cal-day-label{text-align:center;font-size:11px;font-weight:700;color:var(--text3);padding:6px 0;}
+.cal-day-label.sun{color:#e05c5c;}.cal-day-label.sat{color:#5c7ae0;}
+.cal-cell{border-radius:var(--rx);border:1.5px solid var(--border);min-height:72px;padding:6px;cursor:pointer;transition:all .2s;position:relative;background:#fff;}
+.cal-cell:hover{border-color:var(--blue);box-shadow:0 2px 8px rgba(27,67,50,.1);}
+.cal-cell.empty{border-color:transparent;background:transparent;cursor:default;pointer-events:none;}
+.cal-cell.today{border-color:var(--blue);background:rgba(64,145,108,.04);}
+.cal-cell.past{opacity:.45;pointer-events:none;}
+.cal-cell.full{background:var(--surface2);cursor:default;}
+.cal-cell.full:hover{border-color:var(--border);box-shadow:none;}
+.cal-date{font-size:12px;font-weight:700;color:var(--navy);margin-bottom:4px;}
+.cal-cell.sun .cal-date{color:#e05c5c;}.cal-cell.sat .cal-date{color:#5c7ae0;}
+.cal-slot{font-size:10px;border-radius:4px;padding:2px 5px;margin-bottom:2px;font-weight:600;line-height:1.4;}
+.cal-slot.open{background:rgba(64,145,108,.12);color:var(--green);}
+.cal-slot.booked-me{background:rgba(30,77,183,.12);color:var(--blue);}
+.cal-slot.booked-other{background:rgba(214,48,48,.08);color:#a02020;text-decoration:line-through;}
+.cal-slot.full-slot{background:var(--surface2);color:var(--text3);}
+
+/* Booking modal */
+.book-overlay{position:fixed;inset:0;z-index:8500;background:rgba(0,0,0,.6);backdrop-filter:blur(4px);display:none;align-items:center;justify-content:center;}
+.book-overlay.active{display:flex;}
+.book-box{background:#fff;border-radius:var(--r);padding:32px 28px;width:100%;max-width:400px;box-shadow:var(--shl);margin:20px;}
+.book-title{font-size:18px;font-weight:700;color:var(--navy);margin-bottom:6px;}
+.book-date-str{font-size:14px;color:var(--text2);margin-bottom:20px;}
+.book-slots{display:flex;flex-direction:column;gap:10px;margin-bottom:20px;}
+.book-slot-btn{padding:14px 18px;border-radius:var(--rs);border:2px solid var(--border);background:#fff;font-family:'Nanum Gothic',sans-serif;font-size:14px;font-weight:700;cursor:pointer;text-align:left;transition:all .2s;display:flex;align-items:center;justify-content:space-between;}
+.book-slot-btn.avail{border-color:var(--green);color:var(--green);}
+.book-slot-btn.avail:hover{background:rgba(64,145,108,.08);}
+.book-slot-btn.mine{border-color:var(--blue);background:rgba(30,77,183,.06);color:var(--blue);}
+.book-slot-btn.taken{border-color:var(--border);color:var(--text3);cursor:not-allowed;opacity:.6;}
+.book-close{width:100%;padding:11px;background:var(--surface2);border:1.5px solid var(--border);border-radius:var(--rs);font-family:'Nanum Gothic',sans-serif;font-size:14px;font-weight:600;color:var(--text2);cursor:pointer;}
+.book-close:hover{background:var(--border);}
+
+/* Teacher opinion on entries */
+.t-opinion-box{background:linear-gradient(135deg,rgba(27,67,50,.04),rgba(27,67,50,.02));border:1.5px solid rgba(27,67,50,.15);border-radius:var(--rs);padding:14px 16px;margin-top:8px;}
+.t-opinion-label{font-size:11px;font-weight:700;color:var(--navy);letter-spacing:.4px;margin-bottom:10px;display:flex;align-items:center;gap:6px;}
+.t-opinion-label::before{content:'🏫';font-size:12px;}
+.t-opinion-lv-opts{display:grid;grid-template-columns:repeat(5,1fr);gap:4px;margin-bottom:8px;}
+.to-lvo input{display:none;}
+.to-lvo label{display:block;text-align:center;padding:6px 0;border-radius:var(--rx);font-size:10px;font-weight:700;cursor:pointer;border:1.5px solid transparent;transition:all .18s;}
+.to-lvo[data-l="과도상향"] label{background:rgba(214,48,48,.07);color:#b02020;border-color:rgba(214,48,48,.2);}
+.to-lvo[data-l="과도상향"] input:checked+label{background:var(--red);color:#fff;border-color:var(--red);}
+.to-lvo[data-l="상향"] label{background:rgba(212,97,26,.07);color:#a04010;border-color:rgba(212,97,26,.2);}
+.to-lvo[data-l="상향"] input:checked+label{background:var(--orange);color:#fff;border-color:var(--orange);}
+.to-lvo[data-l="소신"] label{background:rgba(240,165,0,.08);color:#8a5c00;border-color:rgba(240,165,0,.25);}
+.to-lvo[data-l="소신"] input:checked+label{background:var(--accent);color:var(--navy);border-color:var(--accent);}
+.to-lvo[data-l="적정"] label{background:rgba(26,122,74,.07);color:#1a6040;border-color:rgba(26,122,74,.2);}
+.to-lvo[data-l="적정"] input:checked+label{background:var(--green);color:#fff;border-color:var(--green);}
+.to-lvo[data-l="하향"] label{background:rgba(47,75,160,.07);color:#2040a0;border-color:rgba(47,75,160,.2);}
+.to-lvo[data-l="하향"] input:checked+label{background:var(--indigo);color:#fff;border-color:var(--indigo);}
+.t-opinion-rank{width:100%;padding:7px 10px;border:1.5px solid var(--border);border-radius:var(--rx);font-family:'Nanum Gothic',sans-serif;font-size:12px;color:var(--text);background:var(--surface2);outline:none;margin-bottom:8px;}
+.t-opinion-rank:focus{border-color:var(--blue);}
+.t-opinion-comment{width:100%;min-height:64px;padding:8px 10px;border:1.5px solid var(--border);border-radius:var(--rx);font-family:'Nanum Gothic',sans-serif;font-size:12px;color:var(--text);background:var(--surface2);outline:none;resize:vertical;line-height:1.6;}
+.t-opinion-comment:focus{border-color:var(--blue);}
+
+/* Student view of teacher opinion */
+.s-t-opinion{background:linear-gradient(135deg,rgba(27,67,50,.05),rgba(27,67,50,.02));border:1.5px solid rgba(27,67,50,.2);border-radius:var(--rs);padding:12px 14px;margin-top:8px;}
+.s-t-opinion-lbl{font-size:11px;font-weight:700;color:var(--navy);margin-bottom:6px;}
+
 .memo-box{background:rgba(240,165,0,.05);border:1.5px solid rgba(240,165,0,.25);border-radius:var(--rs);padding:14px;margin-top:12px;}
 .memo-box-lbl{font-size:11px;font-weight:700;color:var(--amber,#b07a00);margin-bottom:6px;}
 
@@ -502,6 +568,7 @@ body{font-family:'Nanum Gothic',sans-serif;color:var(--text);}
     <div class="tab-bar" id="t-tabbar">
       <button class="tab-btn active" onclick="tTab('overview')">📊 전체 현황</button>
       <button class="tab-btn" id="tt-detail" style="display:none" onclick="tTab('detail')">👤 학생 상세</button>
+      <button class="tab-btn" onclick="tTab('calendar-t')">📅 상담 캘린더</button>
       <button class="tab-btn" onclick="tTab('diary-t')">📔 선행일지</button>
       <button class="tab-btn" onclick="tTab('praise-t')">♥ 칭찬 현황</button>
       <button class="tab-btn" onclick="tTab('reset-pw')">🔑 비밀번호 초기화</button>
@@ -534,7 +601,18 @@ body{font-family:'Nanum Gothic',sans-serif;color:var(--text);}
       </div>
 
       <div class="tab-pane active" id="dtp-univ">
-        <div class="card"><div class="card-h">희망 대학 정보</div><div id="d-entries"></div></div>
+        <div class="card">
+          <div class="card-h">희망 대학 정보 <span style="font-size:11px;font-weight:400;color:var(--text3)">(🏫 = 교사 의견 입력 가능)</span></div>
+          <div id="d-entries"></div>
+          <div style="margin-top:14px">
+            <button class="btn-sm btn-teal" onclick="saveTeacherOpinions()">교사 의견 전체 저장</button>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-h">담임교사 종합 의견 <span class="teacher-only-badge">🔒 학생에게도 공개</span></div>
+          <textarea class="fb-ta" id="d-teacher-total-opinion" placeholder="전체 대학 목록을 검토한 종합 의견을 입력하세요..."></textarea>
+          <button class="btn-sm" style="margin-top:9px" onclick="saveTeacherTotalOpinion()">종합 의견 저장</button>
+        </div>
         <div class="card">
           <div class="card-h">학생 메모 <span style="font-size:11px;font-weight:400;color:var(--text3)">(학생이 직접 작성)</span></div>
           <div id="d-memo" style="font-size:13px;color:var(--text);line-height:1.7;min-height:40px;"></div>
@@ -598,6 +676,24 @@ body{font-family:'Nanum Gothic',sans-serif;color:var(--text);}
       </div>
     </div>
 
+    <!-- 상담 캘린더 (teacher) -->
+    <div class="tab-pane" id="tp-calendar-t">
+      <div class="cal-wrap">
+        <div class="cal-header">
+          <div class="cal-title" id="t-cal-title"></div>
+          <div class="cal-nav">
+            <button class="btn-cal-nav" onclick="tCalMove(-1)">‹</button>
+            <button class="btn-cal-nav" onclick="tCalMove(1)">›</button>
+          </div>
+        </div>
+        <div class="cal-grid" id="t-cal-grid"></div>
+      </div>
+      <div class="card">
+        <div class="card-h">📋 예약 현황</div>
+        <div id="t-booking-list"></div>
+      </div>
+    </div>
+
     <!-- 비밀번호 초기화 -->
     <div class="tab-pane" id="tp-reset-pw">
       <div class="card">
@@ -648,6 +744,7 @@ body{font-family:'Nanum Gothic',sans-serif;color:var(--text);}
   <div class="s-body">
     <div class="tab-bar">
       <button class="tab-btn active" onclick="sTab('univ')">📝 희망 대학</button>
+      <button class="tab-btn" onclick="sTab('calendar')">📅 상담 예약</button>
       <button class="tab-btn" onclick="sTab('gb')">📋 생기부 분석</button>
       <button class="tab-btn" onclick="sTab('diary')">📔 선행일지</button>
       <button class="tab-btn" onclick="sTab('praise')">♥ 칭찬하기</button>
@@ -838,9 +935,41 @@ body{font-family:'Nanum Gothic',sans-serif;color:var(--text);}
       <div id="s-praiseboard-list"></div>
     </div>
 
+    <!-- 상담 예약 -->
+    <div class="tab-pane" id="sp-calendar">
+      <div class="cal-wrap">
+        <div style="background:linear-gradient(135deg,rgba(27,67,50,.06),rgba(27,67,50,.02));border-radius:var(--rs);padding:14px 16px;margin-bottom:16px;font-size:13px;color:var(--text2);line-height:1.7">
+          📌 <strong style="color:var(--navy)">상담 예약 안내</strong><br>
+          날짜를 클릭해서 원하는 시간에 예약하세요!<br>
+          • 1타임: 17:00 ~ 17:50 &nbsp;|&nbsp; 2타임: 18:00 ~ 18:50<br>
+          • 하루 최대 2명만 예약 가능합니다.
+        </div>
+        <div class="cal-header">
+          <div class="cal-title" id="s-cal-title"></div>
+          <div class="cal-nav">
+            <button class="btn-cal-nav" onclick="sCalMove(-1)">‹</button>
+            <button class="btn-cal-nav" onclick="sCalMove(1)">›</button>
+          </div>
+        </div>
+        <div class="cal-grid" id="s-cal-grid"></div>
+      </div>
+      <div class="card">
+        <div class="card-h">내 예약 현황</div>
+        <div id="s-my-bookings"></div>
+      </div>
+    </div>
+
     <!-- 피드백 -->
     <div class="tab-pane" id="sp-feedback">
-      <div class="card"><div class="card-h">교사 피드백</div><div id="s-fb-area"></div></div>
+      <div class="card">
+        <div class="card-h">교사 피드백</div>
+        <div id="s-fb-area"></div>
+      </div>
+      <div class="card" id="s-teacher-opinion-card" style="display:none">
+        <div class="card-h">🏫 담임선생님 대학별 의견</div>
+        <div id="s-teacher-opinions"></div>
+        <div id="s-teacher-total-opinion" style="margin-top:14px"></div>
+      </div>
     </div>
 
     <!-- 예시 -->
@@ -953,6 +1082,16 @@ body{font-family:'Nanum Gothic',sans-serif;color:var(--text);}
       </div>
     </div>
     </div>
+  </div>
+</div>
+
+<!-- 예약 모달 -->
+<div class="book-overlay" id="book-overlay">
+  <div class="book-box">
+    <div class="book-title" id="book-title">상담 예약</div>
+    <div class="book-date-str" id="book-date-str"></div>
+    <div class="book-slots" id="book-slots"></div>
+    <button class="book-close" onclick="closeBooking()">닫기</button>
   </div>
 </div>
 
@@ -1236,18 +1375,199 @@ function doChangePw(){
 }
 
 // ══ TEACHER TABS ══
+let tCalYear=new Date().getFullYear(), tCalMonth=new Date().getMonth();
 function tTab(t){
+  // 모든 탭 버튼 비활성화
   document.querySelectorAll('#t-tabbar .tab-btn').forEach(b=>b.classList.remove('active'));
-  document.querySelectorAll('.tab-pane[id^="tp-"]').forEach(p=>p.classList.remove('active'));
-  const map={'overview':'tp-overview','detail':'tp-detail','diary-t':'tp-diary-t','praise-t':'tp-praise-t','reset-pw':'tp-reset-pw'};
-  const tabIdx={'overview':0,'diary-t':2,'praise-t':3,'reset-pw':4};
+  // 모든 탭 패널 비활성화
+  document.querySelectorAll('#tp-overview,#tp-detail,#tp-calendar-t,#tp-diary-t,#tp-praise-t,#tp-reset-pw').forEach(p=>p.classList.remove('active'));
+  // 해당 패널 활성화
+  const paneId='tp-'+t;
+  const pane=document.getElementById(paneId);
+  if(pane) pane.classList.add('active');
+  // 해당 탭 버튼 활성화
+  const tabMap={'overview':0,'calendar-t':2,'diary-t':3,'praise-t':4,'reset-pw':5};
   const btns=document.querySelectorAll('#t-tabbar .tab-btn');
-  if(t==='detail'){document.getElementById('tt-detail').style.display='';document.getElementById('tt-detail').classList.add('active');}
-  else if(tabIdx[t]!==undefined) btns[tabIdx[t]].classList.add('active');
-  document.getElementById(map[t]).classList.add('active');
+  if(t==='detail'){
+    document.getElementById('tt-detail').style.display='';
+    document.getElementById('tt-detail').classList.add('active');
+  } else if(tabMap[t]!==undefined){
+    btns[tabMap[t]].classList.add('active');
+  }
   if(t==='praise-t') renderPraiseChart();
   if(t==='diary-t') renderTDiaryList();
   if(t==='reset-pw') renderResetGrid();
+  if(t==='calendar-t') renderTCal();
+}
+
+// ══ CALENDAR SYSTEM ══
+const SLOTS=['17:00~17:50 (1타임)','18:00~18:50 (2타임)'];
+function dateKey(y,m,d){return`${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;}
+function getBookings(){return db._bookings||{};}
+
+function renderCalGrid(year,month,gridId,titleId,clickFn){
+  const title=document.getElementById(titleId);
+  const grid=document.getElementById(gridId);
+  if(!title||!grid)return;
+  title.textContent=`${year}년 ${month+1}월`;
+  const days=['일','월','화','수','목','금','토'];
+  let html=days.map((d,i)=>`<div class="cal-day-label ${i===0?'sun':i===6?'sat':''}">${d}</div>`).join('');
+  const first=new Date(year,month,1).getDay();
+  const last=new Date(year,month+1,0).getDate();
+  const today=new Date();
+  const todayKey=dateKey(today.getFullYear(),today.getMonth(),today.getDate());
+  for(let i=0;i<first;i++) html+=`<div class="cal-cell empty"></div>`;
+  const bookings=getBookings();
+  for(let d=1;d<=last;d++){
+    const dk=dateKey(year,month,d);
+    const dayBookings=bookings[dk]||{};
+    const dow=(first+d-1)%7;
+    const isPast=dk<todayKey;
+    const isToday=dk===todayKey;
+    const slot0=dayBookings['0']; const slot1=dayBookings['1'];
+    const isFull=slot0&&slot1;
+    let cls='cal-cell';
+    if(isPast) cls+=' past';
+    if(isToday) cls+=' today';
+    if(dow===0) cls+=' sun'; if(dow===6) cls+=' sat';
+    if(isFull&&!isPast) cls+=' full';
+    const slotHtml=SLOTS.map((s,si)=>{
+      const b=dayBookings[si];
+      if(!b) return `<div class="cal-slot open">✓ ${si===0?'1타임':'2타임'} 예약가능</div>`;
+      const isMe=curSt&&b.studentNo===curSt.no;
+      if(isMe) return `<div class="cal-slot booked-me">✓ 내 예약 (${si===0?'1타임':'2타임'})</div>`;
+      return curRole==='teacher'
+        ?`<div class="cal-slot booked-other">${b.studentName} (${si===0?'1타임':'2타임'})</div>`
+        :`<div class="cal-slot booked-other">예약됨 (${si===0?'1타임':'2타임'})</div>`;
+    }).join('');
+    html+=`<div class="${cls}" onclick="${clickFn}('${dk}')">
+      <div class="cal-date">${d}</div>
+      ${slotHtml}
+    </div>`;
+  }
+  grid.innerHTML=html;
+}
+
+function tCalMove(dir){tCalMonth+=dir;if(tCalMonth<0){tCalMonth=11;tCalYear--;}if(tCalMonth>11){tCalMonth=0;tCalYear++;}renderTCal();}
+function renderTCal(){
+  renderCalGrid(tCalYear,tCalMonth,'t-cal-grid','t-cal-title','tCalClick');
+  renderTBookingList();
+}
+function tCalClick(dk){
+  // 교사는 예약 현황만 확인
+  const bookings=getBookings();
+  const b=bookings[dk]||{};
+  const [y,m,d]=dk.split('-');
+  const dateStr=`${y}년 ${parseInt(m)}월 ${parseInt(d)}일`;
+  let info=`📅 ${dateStr} 예약 현황\n\n`;
+  SLOTS.forEach((s,i)=>{
+    const bk=b[i];
+    info+=`• ${s}: ${bk?bk.studentName+' ('+bk.studentNo+'번)':'비어있음'}\n`;
+  });
+  alert(info);
+}
+function renderTBookingList(){
+  const el=document.getElementById('t-booking-list');
+  const bookings=getBookings();
+  const all=[];
+  Object.entries(bookings).forEach(([dk,slots])=>{
+    Object.entries(slots).forEach(([si,b])=>{
+      all.push({...b,date:dk,slot:parseInt(si)});
+    });
+  });
+  all.sort((a,b)=>a.date.localeCompare(b.date));
+  if(!all.length){el.innerHTML='<div class="empty"><div class="ei">📅</div><p>예약이 없습니다.</p></div>';return;}
+  const today=new Date().toISOString().split('T')[0];
+  el.innerHTML=all.map(b=>`
+    <div class="diary-item" style="${b.date<today?'opacity:.5':''}">
+      <div class="di-head">
+        <span class="di-date">📅 ${b.date}</span>
+        <span class="di-name">${SLOTS[b.slot]}</span>
+        <span style="font-size:12px;color:var(--navy);font-weight:700;margin-left:8px">${b.studentName} (${b.studentNo}번)</span>
+        <button class="di-del" onclick="tCancelBooking('${b.date}',${b.slot})">취소</button>
+      </div>
+    </div>`).join('');
+}
+function tCancelBooking(dk,si){
+  if(!confirm('예약을 취소할까요?'))return;
+  if(!db._bookings) db._bookings={};
+  if(db._bookings[dk]) delete db._bookings[dk][si];
+  dbSave();renderTCal();toast('예약이 취소됐습니다.');
+}
+
+// 학생 캘린더
+let sCalYear=new Date().getFullYear(), sCalMonth=new Date().getMonth();
+function sCalMove(dir){sCalMonth+=dir;if(sCalMonth<0){sCalMonth=11;sCalYear--;}if(sCalMonth>11){sCalMonth=0;sCalYear++;}renderSCal();}
+function renderSCal(){
+  renderCalGrid(sCalYear,sCalMonth,'s-cal-grid','s-cal-title','sCalClick');
+  renderSMyBookings();
+}
+function sCalClick(dk){
+  if(!curSt)return;
+  const bookings=getBookings();
+  const b=bookings[dk]||{};
+  const [y,m,d]=dk.split('-');
+  const dateStr=`${y}년 ${parseInt(m)}월 ${parseInt(d)}일`;
+  document.getElementById('book-title').textContent='📅 상담 예약';
+  document.getElementById('book-date-str').textContent=dateStr;
+  const slotsEl=document.getElementById('book-slots');
+  slotsEl.innerHTML=SLOTS.map((s,si)=>{
+    const bk=b[si];
+    const isMe=bk&&bk.studentNo===curSt.no;
+    const isTaken=bk&&!isMe;
+    let cls=isTaken?'taken':isMe?'mine':'avail';
+    let label=isTaken?`${s} — 마감`
+      :isMe?`${s} — ✅ 내 예약 (클릭 시 취소)`
+      :`${s} — 예약하기`;
+    return `<button class="book-slot-btn ${cls}" onclick="bookSlot('${dk}',${si},${isMe})">${label}</button>`;
+  }).join('');
+  document.getElementById('book-overlay').classList.add('active');
+}
+function closeBooking(){document.getElementById('book-overlay').classList.remove('active');}
+function bookSlot(dk,si,isMe){
+  if(!curSt)return;
+  if(!db._bookings) db._bookings={};
+  if(!db._bookings[dk]) db._bookings[dk]={};
+  if(isMe){
+    // 취소
+    if(!confirm('예약을 취소할까요?'))return;
+    delete db._bookings[dk][si];
+    dbSave();closeBooking();renderSCal();toast('예약이 취소됐습니다.');
+    return;
+  }
+  // 이미 이 날 다른 타임에 예약했는지 확인
+  const existing=Object.entries(db._bookings[dk]||{}).find(([s,b])=>b.studentNo===curSt.no);
+  if(existing){toast('❗ 같은 날 이미 예약이 있어요!');return;}
+  // 이미 찬 슬롯인지
+  if(db._bookings[dk][si]){toast('❗ 이미 마감된 시간이에요!');return;}
+  db._bookings[dk][si]={studentNo:curSt.no,studentName:curSt.name,bookedAt:new Date().toISOString()};
+  // 알림
+  addNotif('univ',curSt.name,curSt.no,'상담 예약',`${dk} ${SLOTS[si]} 상담 예약`);
+  dbSave();closeBooking();renderSCal();
+  toast(`✅ ${dk} ${SLOTS[si]} 예약됐습니다!`);
+}
+function renderSMyBookings(){
+  const el=document.getElementById('s-my-bookings');
+  const bookings=getBookings();
+  const mine=[];
+  Object.entries(bookings).forEach(([dk,slots])=>{
+    Object.entries(slots).forEach(([si,b])=>{
+      if(b.studentNo===curSt?.no) mine.push({date:dk,slot:parseInt(si)});
+    });
+  });
+  mine.sort((a,b)=>a.date.localeCompare(b.date));
+  const today=new Date().toISOString().split('T')[0];
+  el.innerHTML=mine.length?mine.map(b=>`
+    <div class="diary-item">
+      <div class="di-head">
+        <span class="di-date">📅 ${b.date}</span>
+        <span class="di-name">${SLOTS[b.slot]}</span>
+        <span style="font-size:11px;color:${b.date>=today?'var(--green)':'var(--text3)'}">
+          ${b.date>=today?'✅ 예정':'(완료)'}
+        </span>
+      </div>
+    </div>`).join('')
+    :'<div style="font-size:13px;color:var(--text3);padding:10px 0">예약된 상담이 없습니다.</div>';
 }
 
 function renderResetGrid(){
@@ -1278,10 +1598,12 @@ function resetStudentPw(no){
 }
 function dSubTab(t){
   document.querySelectorAll('#d-subtabbar .tab-btn').forEach(b=>b.classList.remove('active'));
-  document.querySelectorAll('.tab-pane[id^="dtp-"]').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('#dtp-univ,#dtp-gb,#dtp-diary-s,#dtp-praise-s,#dtp-fb').forEach(p=>p.classList.remove('active'));
+  const pane=document.getElementById('dtp-'+t);
+  if(pane) pane.classList.add('active');
   const idx={'univ':0,'gb':1,'diary-s':2,'praise-s':3,'fb':4};
-  document.querySelectorAll('#d-subtabbar .tab-btn')[idx[t]].classList.add('active');
-  document.getElementById('dtp-'+t).classList.add('active');
+  const btns=document.querySelectorAll('#d-subtabbar .tab-btn');
+  if(idx[t]!==undefined&&btns[idx[t]]) btns[idx[t]].classList.add('active');
 }
 
 // ══ OVERVIEW ══
@@ -1315,9 +1637,18 @@ function openDetail(no){
   document.getElementById('d-nm').textContent=s.name;
   document.getElementById('d-no').textContent=`3학년 2반 ${s.no}번`;
   // entries
+  const T_OPINION_LEVELS=['과도상향','상향','소신','적정','하향'];
   const yrs=['27','26','25'];
   const ec=document.getElementById('d-entries');
-  ec.innerHTML=d.entries.length?d.entries.map(e=>`
+  const tOpinions=d.teacherOpinions||[];
+  ec.innerHTML=d.entries.length?d.entries.map((e,ei)=>{
+    const op=tOpinions[ei]||{};
+    const lvRadios=T_OPINION_LEVELS.map(lv=>`
+      <div class="to-lvo" data-l="${lv}">
+        <input type="radio" name="top_${ei}" id="top_${ei}_${lv}" value="${lv}" ${op.level===lv?'checked':''}>
+        <label for="top_${ei}_${lv}">${lv}</label>
+      </div>`).join('');
+    return `
     <div class="ev-card">
       <div class="ev-head">
         <div style="display:flex;align-items:baseline;gap:8px;flex-wrap:wrap">
@@ -1363,8 +1694,18 @@ function openDetail(no){
           </tbody>
         </table>
       </div>
-    </div>`).join('')
+      <!-- 교사 의견 입력 -->
+      <div class="t-opinion-box">
+        <div class="t-opinion-label">담임교사 의견 (대교협 프로그램 기준)</div>
+        <div class="t-opinion-lv-opts">${lvRadios}</div>
+        <input type="text" class="t-opinion-rank" id="top_rank_${ei}" value="${op.rank||''}" placeholder="예상 순위 입력 (예: 1순위, 2~3순위)">
+        <textarea class="t-opinion-comment" id="top_comment_${ei}" placeholder="이 대학에 대한 의견을 입력하세요...">${op.comment||''}</textarea>
+      </div>
+    </div>`}).join('')
     :'<div class="empty"><div class="ei">📭</div><p>입력된 자료가 없습니다.</p></div>';
+
+  // 종합 의견
+  document.getElementById('d-teacher-total-opinion').value=d.teacherTotalOpinion||'';
   // memo
   document.getElementById('d-memo').innerHTML=d.memo?d.memo.replace(/\n/g,'<br>'):'<span style="color:var(--text3);font-size:13px">메모 없음</span>';
   // gb
@@ -1454,6 +1795,30 @@ function renderDetailPraise(no){
     :'<div class="empty"><div class="ei">♥</div><p>칭찬 기록이 없습니다.</p></div>';
 }
 
+function saveTeacherOpinions(){
+  if(!curTSt)return;
+  const k=K(curTSt);
+  const entries=db[k].entries||[];
+  const T_LEVELS=['과도상향','상향','소신','적정','하향'];
+  const opinions=entries.map((_,ei)=>{
+    const lv=document.querySelector(`input[name="top_${ei}"]:checked`);
+    return {
+      level:lv?lv.value:'',
+      rank:document.getElementById(`top_rank_${ei}`)?.value.trim()||'',
+      comment:document.getElementById(`top_comment_${ei}`)?.value.trim()||'',
+    };
+  });
+  db[k].teacherOpinions=opinions;
+  addSNotif(curTSt.no,'feedback','선생님이 대학별 의견을 작성했습니다! 피드백 탭에서 확인하세요 🏫');
+  dbSave();toast('🏫 교사 의견이 저장됐습니다!');
+}
+function saveTeacherTotalOpinion(){
+  if(!curTSt)return;
+  const k=K(curTSt);
+  db[k].teacherTotalOpinion=document.getElementById('d-teacher-total-opinion').value.trim();
+  addSNotif(curTSt.no,'feedback','선생님이 종합 의견을 작성했습니다! 피드백 탭에서 확인하세요 🏫');
+  dbSave();toast('✅ 종합 의견이 저장됐습니다!');
+}
 function saveFb(){
   if(!curTSt)return;
   const k=K(curTSt);
@@ -1586,13 +1951,21 @@ function initStudent(){
   loadGb();
   // 학생 알림 뱃지
   updateSNotifBadge();
+  // 캘린더
+  sCalYear=new Date().getFullYear();
+  sCalMonth=new Date().getMonth();
 }
 function sTab(t){
-  const tabs=['univ','gb','diary','praise','praiseboard','feedback','example'];
+  const tabs=['univ','calendar','gb','diary','praise','praiseboard','feedback','example'];
   document.querySelectorAll('.s-body .tab-btn').forEach((b,i)=>b.classList.toggle('active',tabs[i]===t));
-  tabs.forEach(n=>document.getElementById('sp-'+n).classList.toggle('active',n===t));
+  // 모든 학생 패널 비활성화
+  tabs.forEach(n=>{
+    const el=document.getElementById('sp-'+n);
+    if(el) el.classList.toggle('active',n===t);
+  });
   if(t==='praiseboard') loadPraiseBoard();
   if(t==='feedback') loadFb();
+  if(t==='calendar') renderSCal();
 }
 function loadInput(){
   const d=db[K(curSt)];
@@ -1880,11 +2253,37 @@ function loadSPraise(){
 function loadFb(){
   if(!curSt)return;
   const d=db[K(curSt)];
+  // 일반 피드백
   document.getElementById('s-fb-area').innerHTML=`
     <div class="fb-disp">
       <div class="fb-disp-lbl">📋 선생님 피드백</div>
       ${d.feedback&&d.feedback.trim()?`<div class="fb-disp-text">${d.feedback.replace(/\n/g,'<br>')}</div>`:'<div class="fb-disp-empty">아직 피드백이 없습니다.</div>'}
     </div>`;
+  // 교사 의견 (대학별 + 종합)
+  const opinions=d.teacherOpinions||[];
+  const total=d.teacherTotalOpinion||'';
+  const entries=d.entries||[];
+  const hasOpinion=opinions.some(o=>o.level||o.rank||o.comment)||total;
+  const card=document.getElementById('s-teacher-opinion-card');
+  card.style.display=hasOpinion?'':'none';
+  if(hasOpinion){
+    const T_LEVELS=['과도상향','상향','소신','적정','하향'];
+    document.getElementById('s-teacher-opinions').innerHTML=entries.map((e,ei)=>{
+      const op=opinions[ei]||{};
+      if(!op.level&&!op.rank&&!op.comment) return '';
+      return `<div class="s-t-opinion" style="margin-bottom:12px">
+        <div class="s-t-opinion-lbl">🏫 ${e.university||'(없음)'} ${e.dept||''}</div>
+        ${op.level?`<span class="lvb ${op.level}" style="margin-bottom:6px;display:inline-block">${op.level}</span>`:''}
+        ${op.rank?`<div style="font-size:12px;color:var(--text2);margin-bottom:4px">예상 순위: <strong>${op.rank}</strong></div>`:''}
+        ${op.comment?`<div style="font-size:13px;color:var(--text);line-height:1.6">${op.comment.replace(/\n/g,'<br>')}</div>`:''}
+      </div>`;
+    }).join('');
+    document.getElementById('s-teacher-total-opinion').innerHTML=total?`
+      <div style="border-top:1.5px solid var(--border);padding-top:12px;margin-top:4px">
+        <div style="font-size:12px;font-weight:700;color:var(--navy);margin-bottom:6px">📝 담임선생님 종합 의견</div>
+        <div style="font-size:13px;color:var(--text);line-height:1.7">${total.replace(/\n/g,'<br>')}</div>
+      </div>`:'';
+  }
 }
 
 // ══ PRAISE BOARD (anonymous) ══
