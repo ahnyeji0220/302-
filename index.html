@@ -442,43 +442,12 @@ body{font-family:'Nanum Gothic',sans-serif;color:var(--text);}
   .auth-box{padding:28px 20px;}
 }
 
-/* ── 공휴일/학교일정 캘린더 스타일 ── */
-.cal-cell.no-consult{background:rgba(214,48,48,.03);cursor:not-allowed;pointer-events:none;opacity:.75;}
+/* ── 캘린더 차단일 사유/상담없음 표시 ── */
+.cal-cell.no-consult{background:rgba(180,180,180,.07);cursor:not-allowed;pointer-events:none;}
 .cal-cell.no-consult:hover{border-color:var(--border);box-shadow:none;}
-.cal-event.vacation{background:rgba(255,152,0,.13);color:#c45200;}
-.cal-event{font-size:9px;font-weight:700;padding:2px 5px;border-radius:4px;margin-bottom:2px;line-height:1.4;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.cal-event.holiday{background:rgba(214,48,48,.12);color:#b02020;}
-.cal-event.school-ev{background:rgba(30,77,183,.1);color:#1e4db7;}
-.cal-event.closed-ev{background:rgba(107,63,160,.1);color:var(--purple);}
-.cal-slot.no-consult-slot{background:rgba(214,48,48,.06);color:#c03030;font-size:9px;text-align:center;padding:3px 4px;}
-
-/* ── 교사 캘린더 관리 모달 ── */
-.tcm-badge{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:700;padding:3px 10px;border-radius:12px;}
-.tcm-badge.holiday{background:rgba(214,48,48,.1);color:#b02020;}
-.tcm-badge.school{background:rgba(30,77,183,.1);color:#1e4db7;}
-.tcm-slot{border:1.5px solid var(--border);border-radius:var(--rs);padding:12px 14px;transition:all .2s;}
-.tcm-slot-label{font-size:13px;font-weight:700;color:var(--navy);margin-bottom:8px;}
-.tcm-slot-actions{display:flex;align-items:center;flex-wrap:wrap;gap:8px;}
-.tcm-slot-status{font-size:12px;font-weight:600;flex:1;}
-.tcm-slot-status.open{color:var(--green);}
-.tcm-slot-status.booked{color:var(--blue);}
-.tcm-slot-status.closed{color:var(--purple);}
-.tcm-btn{padding:6px 12px;border:none;border-radius:var(--rx);font-family:'Nanum Gothic',sans-serif;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap;transition:all .2s;}
-.tcm-btn-book{background:rgba(27,67,50,.1);color:var(--navy);}
-.tcm-btn-book:hover{background:var(--navy);color:#fff;}
-.tcm-btn-close2{background:rgba(107,63,160,.1);color:var(--purple);}
-.tcm-btn-close2:hover{background:var(--purple);color:#fff;}
-.tcm-btn-cancel{background:rgba(214,48,48,.1);color:var(--red);}
-.tcm-btn-cancel:hover{background:var(--red);color:#fff;}
-.tcm-btn-open{background:rgba(64,145,108,.1);color:var(--green);}
-.tcm-btn-open:hover{background:var(--green);color:#fff;}
-.tcm-full-btn{width:100%;padding:11px;border:none;border-radius:var(--rs);font-family:'Nanum Gothic',sans-serif;font-size:13px;font-weight:700;cursor:pointer;transition:all .2s;}
-.tcm-full-btn.close2{background:rgba(107,63,160,.12);color:var(--purple);border:1.5px solid rgba(107,63,160,.25);}
-.tcm-full-btn.close2:hover{background:var(--purple);color:#fff;}
-.tcm-full-btn.open{background:rgba(64,145,108,.12);color:var(--green);border:1.5px solid rgba(64,145,108,.25);}
-.tcm-full-btn.open:hover{background:var(--green);color:#fff;}
-.tcm-unavail{padding:16px;text-align:center;color:var(--text3);font-size:14px;}
-.tcm-unavail.red{color:var(--red);font-weight:700;}
+.cal-cell.no-consult .cal-date{opacity:.6;}
+.cal-block-reason{font-size:9.5px;font-weight:700;color:var(--text2);margin:3px 0 1px;line-height:1.3;word-break:keep-all;}
+.cal-block-msg{font-size:9px;color:#aaa;font-weight:600;margin-top:2px;}
 </style>
 </head>
 <body>
@@ -716,30 +685,6 @@ body{font-family:'Nanum Gothic',sans-serif;color:var(--text);}
 
     <!-- 상담 캘린더 (teacher) -->
     <div class="tab-pane" id="tp-calendar-t">
-      <!-- 범례 -->
-      <div style="display:flex;flex-wrap:wrap;gap:8px;padding:12px 14px;background:#fff;border-radius:var(--rs);border:1.5px solid var(--border);margin-bottom:12px;font-size:11px;font-weight:700">
-        <span style="color:var(--green)">● 예약 가능</span>
-        <span style="color:var(--blue)">● 예약됨</span>
-        <span style="color:var(--purple)">● 마감</span>
-        <span style="color:#b02020">🎌 공휴일</span>
-        <span style="color:#1e4db7">📌 학교 일정</span>
-        <span style="color:var(--red)">🚫 상담 불가</span>
-        <span style="margin-left:auto;color:var(--text3);font-weight:400">날짜 클릭 → 예약/마감 관리</span>
-      </div>
-      <!-- 학교 주요 일정 -->
-      <div style="background:rgba(30,77,183,.04);border:1.5px solid rgba(30,77,183,.15);border-radius:var(--rs);padding:12px 14px;margin-bottom:12px">
-        <div style="font-size:12px;font-weight:700;color:#1e4db7;margin-bottom:8px">📅 학교 주요 일정 (상담 불가)</div>
-        <div style="display:flex;flex-wrap:wrap;gap:6px">
-          <span style="font-size:11px;background:rgba(30,77,183,.08);border-radius:10px;padding:3px 10px;color:#1e4db7">📝 6/4 대수능모의고사</span>
-          <span style="font-size:11px;background:rgba(30,77,183,.08);border-radius:10px;padding:3px 10px;color:#1e4db7">🎭 6/12 동아리 전일제</span>
-          <span style="font-size:11px;background:rgba(30,77,183,.08);border-radius:10px;padding:3px 10px;color:#1e4db7">📚 6/30~7/3 2차 정기시험</span>
-          <span style="font-size:11px;background:rgba(30,77,183,.08);border-radius:10px;padding:3px 10px;color:#1e4db7">📝 7/8 전국연합학력평가</span>
-          <span style="font-size:11px;background:rgba(214,48,48,.08);border-radius:10px;padding:3px 10px;color:#c03030">🚫 7/20 상담 없음</span>
-          <span style="font-size:11px;background:rgba(30,77,183,.08);border-radius:10px;padding:3px 10px;color:#1e4db7">🏖️ 7/21 방학식</span>
-          <span style="font-size:11px;background:rgba(255,152,0,.12);border-radius:10px;padding:3px 10px;color:#e65100">🏖️ 7/22~8/17 방학 (상담 없음)</span>
-          <span style="font-size:11px;background:rgba(30,77,183,.08);border-radius:10px;padding:3px 10px;color:#1e4db7">🏫 8/18 개학</span>
-        </div>
-      </div>
       <div class="cal-wrap">
         <div class="cal-header">
           <div class="cal-title" id="t-cal-title"></div>
@@ -753,7 +698,6 @@ body{font-family:'Nanum Gothic',sans-serif;color:var(--text);}
       <div class="card">
         <div class="card-h">📋 예약 현황</div>
         <div id="t-booking-list"></div>
-      </div>
       </div>
     </div>
 
@@ -1001,20 +945,11 @@ body{font-family:'Nanum Gothic',sans-serif;color:var(--text);}
     <!-- 상담 예약 -->
     <div class="tab-pane" id="sp-calendar">
       <div class="cal-wrap">
-        <div style="background:linear-gradient(135deg,rgba(27,67,50,.06),rgba(27,67,50,.02));border-radius:var(--rs);padding:14px 16px;margin-bottom:12px;font-size:13px;color:var(--text2);line-height:1.7">
+        <div style="background:linear-gradient(135deg,rgba(27,67,50,.06),rgba(27,67,50,.02));border-radius:var(--rs);padding:14px 16px;margin-bottom:16px;font-size:13px;color:var(--text2);line-height:1.7">
           📌 <strong style="color:var(--navy)">상담 예약 안내</strong><br>
           날짜를 클릭해서 원하는 시간에 예약하세요!<br>
           • 1타임: 17:00 ~ 17:50 &nbsp;|&nbsp; 2타임: 18:00 ~ 18:50<br>
-          • 하루 최대 2명만 예약 가능합니다.<br>
-          • 🚫 표시된 날짜와 공휴일, 시험 기간은 예약이 불가합니다.
-        </div>
-        <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px;font-size:11px;font-weight:700">
-          <span style="background:rgba(64,145,108,.1);color:var(--green);padding:3px 9px;border-radius:10px">✓ 예약가능</span>
-          <span style="background:rgba(30,77,183,.1);color:var(--blue);padding:3px 9px;border-radius:10px">✓ 내 예약</span>
-          <span style="background:rgba(214,48,48,.08);color:#a02020;padding:3px 9px;border-radius:10px">예약됨</span>
-          <span style="background:rgba(214,48,48,.06);color:#c03030;padding:3px 9px;border-radius:10px">🚫 상담불가</span>
-          <span style="background:rgba(214,48,48,.1);color:#b02020;padding:3px 9px;border-radius:10px">🎌 공휴일</span>
-          <span style="background:rgba(30,77,183,.08);color:#1e4db7;padding:3px 9px;border-radius:10px">📌 학교일정</span>
+          • 하루 최대 2명만 예약 가능합니다.
         </div>
         <div class="cal-header">
           <div class="cal-title" id="s-cal-title"></div>
@@ -1157,41 +1092,6 @@ body{font-family:'Nanum Gothic',sans-serif;color:var(--text);}
   </div>
 </div>
 
-
-<!-- ══ 교사 캘린더 관리 모달 ══ -->
-<div class="book-overlay" id="tcal-modal">
-  <div class="book-box" style="max-width:480px">
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
-      <div class="book-title" id="tcal-modal-date"></div>
-      <button onclick="closeTeacherCalModal()" style="background:none;border:none;font-size:20px;cursor:pointer;color:var(--text3);padding:0 4px">✕</button>
-    </div>
-    <div id="tcal-modal-badges" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px"></div>
-
-    <div id="tcal-modal-slots" style="display:flex;flex-direction:column;gap:10px;margin-bottom:14px"></div>
-
-    <!-- 학생 예약 선택 폼 -->
-    <div id="tcal-student-select-row" style="display:none;background:rgba(64,145,108,.06);border:1.5px solid rgba(64,145,108,.2);border-radius:var(--rs);padding:14px;margin-bottom:14px">
-      <div style="font-size:13px;font-weight:700;color:var(--navy);margin-bottom:10px">📋 학생 예약 등록</div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">
-        <div>
-          <div style="font-size:11px;font-weight:700;color:var(--text2);margin-bottom:5px">학생 선택</div>
-          <select id="tcal-student-sel" style="width:100%;padding:8px 10px;border:1.5px solid var(--border);border-radius:var(--rx);font-family:'Nanum Gothic',sans-serif;font-size:13px;outline:none;background:#fff"></select>
-        </div>
-        <div>
-          <div style="font-size:11px;font-weight:700;color:var(--text2);margin-bottom:5px">상담 주제</div>
-          <select id="tcal-topic-sel" style="width:100%;padding:8px 10px;border:1.5px solid var(--border);border-radius:var(--rx);font-family:'Nanum Gothic',sans-serif;font-size:13px;outline:none;background:#fff"></select>
-        </div>
-      </div>
-      <button onclick="tConfirmBook()" style="width:100%;padding:11px;background:var(--navy);color:#fff;border:none;border-radius:var(--rx);font-family:'Nanum Gothic',sans-serif;font-size:14px;font-weight:700;cursor:pointer">✅ 예약 확정</button>
-    </div>
-
-    <!-- 전체 마감/해제 -->
-    <div id="tcal-modal-close-row" style="margin-bottom:10px"></div>
-
-    <button class="book-close" onclick="closeTeacherCalModal()">닫기</button>
-  </div>
-</div>
-
 <!-- 예약 모달 -->
 <div class="book-overlay" id="book-overlay">
   <div class="book-box">
@@ -1280,7 +1180,6 @@ async function dbLoad(){
     if(!db._praises) db._praises=[];
     if(!db._diaries) db._diaries=[];
     if(!db._notifs) db._notifs=[];
-    if(!db._closedDates) db._closedDates={};
   } catch(e) {
     console.error('Firebase load error:', e);
     toast('⚠️ 데이터 로드 실패. 네트워크를 확인해 주세요.');
@@ -1540,7 +1439,7 @@ const HOLIDAYS={
   '2026-10-03':'개천절','2026-10-09':'한글날','2026-12-25':'크리스마스'
 };
 
-// ── 학교 주요 일정 ──
+// ── 학교 주요 일정 (noConsult:true → 상담예약 불가 / false → 표시만) ──
 const SCHOOL_EVENTS={
   '2025-06-04':{label:'대수능모의고사',icon:'📝',noConsult:true},
   '2025-06-12':{label:'동아리 전일제',icon:'🎭',noConsult:true},
@@ -1583,11 +1482,12 @@ const SCHOOL_EVENTS={
 
 function getHoliday(dk){return HOLIDAYS[dk]||null;}
 function getSchoolEvent(dk){return SCHOOL_EVENTS[dk]||null;}
-function isNoConsultDay(dk){
+// 공휴일·주말·noConsult:true 일정만 예약 차단
+function isBlocked(dk,dow){
+  if(dow===0||dow===6) return true;
+  if(getHoliday(dk)) return true;
   const ev=getSchoolEvent(dk);
   if(ev&&ev.noConsult) return true;
-  const closed=db._closedDates||{};
-  if(closed[dk]) return true;
   return false;
 }
 
@@ -1604,47 +1504,40 @@ function renderCalGrid(year,month,gridId,titleId,clickFn){
   const todayKey=dateKey(today.getFullYear(),today.getMonth(),today.getDate());
   for(let i=0;i<first;i++) html+=`<div class="cal-cell empty"></div>`;
   const bookings=getBookings();
-  const closedDates=db._closedDates||{};
   for(let d=1;d<=last;d++){
     const dk=dateKey(year,month,d);
     const dayBookings=bookings[dk]||{};
     const dow=(first+d-1)%7;
-    const isWeekend=dow===0||dow===6;
     const isPast=dk<todayKey;
     const isToday=dk===todayKey;
-    const isHoliday=!!getHoliday(dk);
+    const holiday=getHoliday(dk);
     const schoolEv=getSchoolEvent(dk);
-    const noConsult=isNoConsultDay(dk);
-    const isClosed=closedDates[dk];
+    const blocked=isBlocked(dk,dow);
     const slot0=dayBookings['0']; const slot1=dayBookings['1'];
-    const isFull=(slot0&&slot1)||noConsult||isWeekend||isHoliday;
+    const isFull=slot0&&slot1;
 
     let cls='cal-cell';
     if(isPast) cls+=' past';
     if(isToday) cls+=' today';
-    if(dow===0||isHoliday) cls+=' sun';
+    if(dow===0||holiday) cls+=' sun';
     if(dow===6) cls+=' sat';
-    if(isWeekend||isHoliday) cls+=' no-consult';
-    else if(noConsult) cls+=' no-consult';
+    if(blocked) cls+=' no-consult';
     else if(isFull&&!isPast) cls+=' full';
 
-    let extraBadge='';
-    if(isHoliday) extraBadge+=`<div class="cal-event holiday">🎌 ${getHoliday(dk)}</div>`;
-    if(schoolEv){
-      const evCls=schoolEv.label==='방학'?'vacation':'school-ev';
-      extraBadge+=`<div class="cal-event ${evCls}">${schoolEv.icon} ${schoolEv.label}</div>`;
-    } else if(isClosed&&!isHoliday) extraBadge+=`<div class="cal-event closed-ev">🔒 마감</div>`;
+    // ── 칸 내부 구성 ──
+    let inner=`<div class="cal-date">${d}</div>`;
 
-    let slotHtml='';
-    if(isWeekend||isHoliday){
-      slotHtml='';
-    } else if(noConsult){
-      slotHtml='';
+    if(blocked){
+      // 차단된 날: 사유 텍스트 + "상담 없음"
+      if(holiday) inner+=`<div class="cal-block-reason">🎌 ${holiday}</div>`;
+      else if(schoolEv) inner+=`<div class="cal-block-reason">${schoolEv.icon} ${schoolEv.label}</div>`;
+      inner+=`<div class="cal-block-msg">상담 없음</div>`;
     } else {
-      slotHtml=SLOTS.map((s,si)=>{
+      // 예약 가능한 날: 학교일정 표시(개학 등 noConsult:false) + 슬롯
+      if(schoolEv) inner+=`<div class="cal-block-reason" style="color:var(--blue)">${schoolEv.icon} ${schoolEv.label}</div>`;
+      inner+=SLOTS.map((s,si)=>{
         const b=dayBookings[si];
         if(!b) return `<div class="cal-slot open">✓ ${si===0?'1타임':'2타임'} 예약가능</div>`;
-        if(b.type==='closed') return `<div class="cal-slot full-slot">🔒 마감</div>`;
         const isMe=curSt&&b.studentNo===curSt.no;
         if(isMe) return `<div class="cal-slot booked-me">✓ 내 예약 (${si===0?'1타임':'2타임'})</div>`;
         return curRole==='teacher'
@@ -1652,13 +1545,8 @@ function renderCalGrid(year,month,gridId,titleId,clickFn){
           :`<div class="cal-slot booked-other">예약됨 (${si===0?'1타임':'2타임'})</div>`;
       }).join('');
     }
-    // 주말/공휴일/학교일정/마감 모두 차단 (교사/학생 동일)
-    const isBlocked=isWeekend||isHoliday||noConsult;
-    html+=`<div class="${cls}"${isBlocked?'':` onclick="${clickFn}('${dk}')"`}>
-      <div class="cal-date">${d}</div>
-      ${extraBadge}
-      ${slotHtml}
-    </div>`;
+
+    html+=`<div class="${cls}"${blocked?'':` onclick="${clickFn}('${dk}')"`}>${inner}</div>`;
   }
   grid.innerHTML=html;
 }
@@ -1668,131 +1556,18 @@ function renderTCal(){
   renderCalGrid(tCalYear,tCalMonth,'t-cal-grid','t-cal-title','tCalClick');
   renderTBookingList();
 }
-
-// ── 교사 전용 캘린더 클릭 → 관리 모달 ──
-let tCalState={dk:'',si:-1};
 function tCalClick(dk){
-  const dow=new Date(dk+'T00:00:00').getDay();
-  const isWeekend=dow===0||dow===6;
-  const isHoliday=!!getHoliday(dk);
-  const schoolEv=getSchoolEvent(dk);
-  const noConsult=isNoConsultDay(dk);
+  // 교사는 예약 현황만 확인
+  const bookings=getBookings();
+  const b=bookings[dk]||{};
   const [y,m,d]=dk.split('-');
   const dateStr=`${y}년 ${parseInt(m)}월 ${parseInt(d)}일`;
-  openTeacherCalModal(dk,dateStr,isWeekend,isHoliday,schoolEv,noConsult);
-}
-
-function openTeacherCalModal(dk,dateStr,isWeekend,isHoliday,schoolEv,noConsult){
-  tCalState={dk,si:-1};
-  const bookings=getBookings();
-  const dayBookings=bookings[dk]||{};
-  const closedDates=db._closedDates||{};
-  const isFullClosed=closedDates[dk];
-
-  document.getElementById('tcal-modal-date').textContent=dateStr;
-  let badgeHtml='';
-  if(isHoliday) badgeHtml+=`<span class="tcm-badge holiday">🎌 ${getHoliday(dk)}</span>`;
-  if(schoolEv) badgeHtml+=`<span class="tcm-badge school">${schoolEv.icon} ${schoolEv.label}</span>`;
-  document.getElementById('tcal-modal-badges').innerHTML=badgeHtml;
-
-  const slotsEl=document.getElementById('tcal-modal-slots');
-  const closeRow=document.getElementById('tcal-modal-close-row');
-  if(isWeekend||isHoliday){
-    slotsEl.innerHTML=`<div class="tcm-unavail">주말/공휴일은 상담 불가합니다.</div>`;
-    closeRow.style.display='none';
-  } else if(noConsult&&!isFullClosed){
-    slotsEl.innerHTML=`<div class="tcm-unavail red">📌 학교 일정으로 상담 불가인 날입니다.</div>`;
-    closeRow.style.display='none';
-  } else {
-    slotsEl.innerHTML=SLOTS.map((s,si)=>{
-      const b=dayBookings[si];
-      const isClosed=b&&b.type==='closed';
-      const isBooked=b&&!isClosed;
-      let statusHtml='';
-      if(isClosed){
-        statusHtml=`<span class="tcm-slot-status closed">🔒 마감</span>
-          <button class="tcm-btn tcm-btn-open" onclick="tSlotOpen('${dk}',${si})">마감 해제</button>`;
-      } else if(isBooked){
-        statusHtml=`<span class="tcm-slot-status booked">${b.studentName} (${b.studentNo}번)${b.topic?' ['+b.topic+']':''}</span>
-          <button class="tcm-btn tcm-btn-cancel" onclick="tCancelBooking('${dk}',${si})">예약 취소</button>`;
-      } else {
-        statusHtml=`<span class="tcm-slot-status open">예약 가능</span>
-          <button class="tcm-btn tcm-btn-book" onclick="tSlotSelectForBook(${si})">학생 예약</button>
-          <button class="tcm-btn tcm-btn-close2" onclick="tSlotClose('${dk}',${si})">마감 설정</button>`;
-      }
-      return `<div class="tcm-slot" id="tcm-slot-${si}">
-        <div class="tcm-slot-label">${s}</div>
-        <div class="tcm-slot-actions">${statusHtml}</div>
-      </div>`;
-    }).join('');
-
-    closeRow.style.display='';
-    if(isFullClosed){
-      closeRow.innerHTML=`<button class="tcm-full-btn open" onclick="tFullOpen('${dk}')">🔓 전체 마감 해제</button>`;
-    } else {
-      closeRow.innerHTML=`<button class="tcm-full-btn close2" onclick="tFullClose('${dk}')">🔒 이 날 전체 마감</button>`;
-    }
-  }
-  document.getElementById('tcal-student-select-row').style.display='none';
-  document.getElementById('tcal-modal').classList.add('active');
-}
-
-function tSlotSelectForBook(si){
-  tCalState.si=si;
-  document.querySelectorAll('.tcm-slot').forEach((el,i)=>{
-    el.style.background=i===si?'rgba(64,145,108,.08)':'';
-    el.style.borderColor=i===si?'var(--blue)':'var(--border)';
+  let info=`📅 ${dateStr} 예약 현황\n\n`;
+  SLOTS.forEach((s,i)=>{
+    const bk=b[i];
+    info+=`• ${s}: ${bk?bk.studentName+' ('+bk.studentNo+'번)':'비어있음'}\n`;
   });
-  const row=document.getElementById('tcal-student-select-row');
-  row.style.display='';
-  const sel=document.getElementById('tcal-student-sel');
-  sel.innerHTML='<option value="">-- 학생 선택 --</option>';
-  STUDENTS.forEach(s=>sel.innerHTML+=`<option value="${s.no}">${s.no}번 ${s.name}</option>`);
-  const topicSel=document.getElementById('tcal-topic-sel');
-  topicSel.innerHTML=TOPICS.map((t,i)=>`<option value="${t}">${TOPIC_ICONS[i]} ${t}</option>`).join('');
-}
-
-function tSlotClose(dk,si){
-  if(!confirm(`${SLOTS[si]}을 마감 처리할까요?`))return;
-  if(!db._bookings) db._bookings={};
-  if(!db._bookings[dk]) db._bookings[dk]={};
-  db._bookings[dk][si]={type:'closed',closedAt:new Date().toISOString()};
-  dbSave();closeTeacherCalModal();renderTCal();toast(`🔒 ${SLOTS[si]} 마감됐습니다.`);
-}
-function tSlotOpen(dk,si){
-  if(!db._bookings||!db._bookings[dk]) return;
-  delete db._bookings[dk][si];
-  dbSave();closeTeacherCalModal();renderTCal();toast(`🔓 마감이 해제됐습니다.`);
-}
-function tFullClose(dk){
-  if(!confirm('이 날 전체를 상담 불가로 마감할까요?'))return;
-  if(!db._closedDates) db._closedDates={};
-  db._closedDates[dk]=true;
-  dbSave();closeTeacherCalModal();renderTCal();toast('🔒 해당 날짜가 마감됐습니다.');
-}
-function tFullOpen(dk){
-  if(!db._closedDates) return;
-  delete db._closedDates[dk];
-  dbSave();closeTeacherCalModal();renderTCal();toast('🔓 마감이 해제됐습니다.');
-}
-function tConfirmBook(){
-  const {dk,si}=tCalState;
-  if(si<0){toast('❗ 타임을 먼저 선택하세요.');return;}
-  const selNo=parseInt(document.getElementById('tcal-student-sel').value);
-  if(!selNo){toast('❗ 학생을 선택하세요.');return;}
-  const topic=document.getElementById('tcal-topic-sel').value;
-  const s=STUDENTS.find(x=>x.no===selNo);
-  if(!db._bookings) db._bookings={};
-  if(!db._bookings[dk]) db._bookings[dk]={};
-  if(db._bookings[dk][si]&&db._bookings[dk][si].type!=='closed'){toast('❗ 이미 예약된 타임입니다.');return;}
-  db._bookings[dk][si]={studentNo:s.no,studentName:s.name,topic,bookedAt:new Date().toISOString(),byTeacher:true};
-  addSNotif(s.no,'feedback',`📅 선생님이 ${dk} ${SLOTS[si]} [${topic}] 상담을 예약해 주셨습니다!`);
-  dbSave();closeTeacherCalModal();renderTCal();
-  toast(`✅ ${s.name} 학생 ${SLOTS[si]} 예약 완료!`);
-}
-function closeTeacherCalModal(){
-  document.getElementById('tcal-modal').classList.remove('active');
-  tCalState={dk:'',si:-1};
+  alert(info);
 }
 function renderTBookingList(){
   const el=document.getElementById('t-booking-list');
@@ -1821,7 +1596,7 @@ function tCancelBooking(dk,si){
   if(!confirm('예약을 취소할까요?'))return;
   if(!db._bookings) db._bookings={};
   if(db._bookings[dk]) delete db._bookings[dk][si];
-  dbSave();closeTeacherCalModal();renderTCal();toast('예약이 취소됐습니다.');
+  dbSave();renderTCal();toast('예약이 취소됐습니다.');
 }
 
 // 학생 캘린더
@@ -1837,16 +1612,6 @@ let bookState={dk:'',si:-1,topic:''};  // 현재 모달 상태
 
 function sCalClick(dk){
   if(!curSt)return;
-  const dow=new Date(dk+'T00:00:00').getDay();
-  if(dow===0||dow===6){toast('주말은 상담 예약이 불가합니다.');return;}
-  if(getHoliday(dk)){toast(`공휴일(${getHoliday(dk)})은 상담 예약이 불가합니다.`);return;}
-  if(isNoConsultDay(dk)){
-    const ev=getSchoolEvent(dk);
-    const closed=db._closedDates||{};
-    if(closed[dk]) toast('이 날은 교사가 상담을 마감했습니다.');
-    else toast(`${ev?ev.icon+' '+ev.label:'이 날'}은 상담이 불가합니다.`);
-    return;
-  }
   const bookings=getBookings();
   const b=bookings[dk]||{};
   const [y,m,d]=dk.split('-');
@@ -1861,18 +1626,15 @@ function sCalClick(dk){
   const slotsEl=document.getElementById('book-slots');
   slotsEl.innerHTML=SLOTS.map((s,si)=>{
     const bk=b[si];
-    const isClosed=bk&&bk.type==='closed';
-    const isMe=bk&&!isClosed&&bk.studentNo===curSt.no;
-    const isTaken=(bk&&!isClosed&&!isMe)||isClosed;
+    const isMe=bk&&bk.studentNo===curSt.no;
+    const isTaken=bk&&!isMe;
     let cls=isTaken?'taken':isMe?'mine':'avail';
     let topicBadge=bk?.topic?` <span style="font-size:11px;opacity:.8">[${bk.topic}]</span>`:'';
-    let label=isClosed
-      ?`${s} — 🔒 마감`
-      :isTaken
-        ?`${s} — 예약됨${topicBadge}`
-        :isMe
-          ?`<div>${s} — ✅ 내 예약${topicBadge}</div><div style="font-size:11px;margin-top:3px;opacity:.8">클릭: 취소 또는 변경</div>`
-          :`${s} — 예약하기`;
+    let label=isTaken
+      ?`${s} — 마감${topicBadge}`
+      :isMe
+        ?`<div>${s} — ✅ 내 예약${topicBadge}</div><div style="font-size:11px;margin-top:3px;opacity:.8">클릭: 취소 또는 변경</div>`
+        :`${s} — 예약하기`;
     return `<button class="book-slot-btn ${cls}" onclick="selectSlot('${dk}',${si},${isMe},${isTaken})">${label}</button>`;
   }).join('');
   document.getElementById('book-overlay').classList.add('active');
