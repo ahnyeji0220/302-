@@ -443,7 +443,7 @@ body{font-family:'Nanum Gothic',sans-serif;color:var(--text);}
 }
 
 /* ── 공휴일/학교일정 캘린더 스타일 ── */
-.cal-cell.no-consult{background:rgba(214,48,48,.04);cursor:default;}
+.cal-cell.no-consult{background:rgba(214,48,48,.04);cursor:not-allowed;pointer-events:none;}
 .cal-cell.no-consult:hover{border-color:var(--border);box-shadow:none;}
 .cal-event{font-size:9px;font-weight:700;padding:2px 5px;border-radius:4px;margin-bottom:2px;line-height:1.4;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .cal-event.holiday{background:rgba(214,48,48,.12);color:#b02020;}
@@ -1619,7 +1619,11 @@ function renderCalGrid(year,month,gridId,titleId,clickFn){
           :`<div class="cal-slot booked-other">예약됨 (${si===0?'1타임':'2타임'})</div>`;
       }).join('');
     }
-    html+=`<div class="${cls}" onclick="${clickFn}('${dk}')">
+    const isTeacher=clickFn==='tCalClick';
+    // 교사: 주말/공휴일만 차단 (학교일정/마감날은 관리 가능)
+    // 학생: 주말/공휴일/상담불가 모두 차단
+    const isBlocked=isTeacher?(isWeekend||isHoliday):(isWeekend||isHoliday||noConsult);
+    html+=`<div class="${cls}"${isBlocked?'':` onclick="${clickFn}('${dk}')"`}>
       <div class="cal-date">${d}</div>
       ${extraBadge}
       ${slotHtml}
