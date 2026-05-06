@@ -1237,6 +1237,8 @@ async function dbLoad(){
     if(!db._praises) db._praises=[];
     if(!db._diaries) db._diaries=[];
     if(!db._notifs) db._notifs=[];
+    if(!db._bookings) db._bookings={};
+    if(!db._closedDates) db._closedDates={};
   } catch(e) {
     console.error('Firebase load error:', e);
     toast('⚠️ 데이터 로드 실패. 네트워크를 확인해 주세요.');
@@ -1280,6 +1282,8 @@ function showLoading(show){
 // ══ NOTIFICATION SYSTEM ══
 function addNotif(type, studentName, studentNo, area, summary){
   if(!db._notifs) db._notifs=[];
+  if(!db._bookings) db._bookings={};
+  if(!db._closedDates) db._closedDates={};
   const notif={
     id: Date.now()+'_'+Math.random().toString(36).slice(2,6),
     type,         // 'univ'|'gb'|'diary'|'praise'|'memo'
