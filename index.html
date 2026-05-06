@@ -1088,10 +1088,22 @@ body{font-family:'Nanum Gothic',sans-serif;color:var(--text);}
 <!-- 예약 모달 -->
 <div class="book-overlay" id="book-overlay">
   <div class="book-box">
-    <div class="book-title" id="book-title">상담 예약</div>
+    <div class="book-title" id="book-title">📅 상담 예약</div>
     <div class="book-date-str" id="book-date-str"></div>
+
+    <!-- 타임 선택 -->
     <div class="book-slots" id="book-slots"></div>
-    <button class="book-close" onclick="closeBooking()">닫기</button>
+
+    <!-- 상담 주제 선택 (예약 가능 타임 선택 시에만 표시) -->
+    <div id="book-topic-wrap" style="display:none;margin-bottom:16px">
+      <div style="font-size:12px;font-weight:700;color:var(--text2);margin-bottom:8px">📌 상담 주제 선택</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px" id="book-topic-btns"></div>
+    </div>
+
+    <div style="display:flex;gap:8px">
+      <button class="book-close" style="flex:1" onclick="closeBooking()">닫기</button>
+      <button id="book-confirm-btn" style="display:none;flex:1;padding:11px;background:var(--green);color:#fff;border:none;border-radius:var(--rs);font-family:'Nanum Gothic',sans-serif;font-size:14px;font-weight:700;cursor:pointer" onclick="confirmBooking()">예약 확정</button>
+    </div>
   </div>
 </div>
 
@@ -1480,10 +1492,11 @@ function renderTBookingList(){
   const today=new Date().toISOString().split('T')[0];
   el.innerHTML=all.map(b=>`
     <div class="diary-item" style="${b.date<today?'opacity:.5':''}">
-      <div class="di-head">
+      <div class="di-head" style="flex-wrap:wrap;gap:6px">
         <span class="di-date">📅 ${b.date}</span>
         <span class="di-name">${SLOTS[b.slot]}</span>
-        <span style="font-size:12px;color:var(--navy);font-weight:700;margin-left:8px">${b.studentName} (${b.studentNo}번)</span>
+        <span style="font-size:12px;color:var(--navy);font-weight:700">${b.studentName} (${b.studentNo}번)</span>
+        ${b.topic?`<span style="font-size:11px;font-weight:700;color:var(--purple);background:rgba(107,63,160,.1);padding:2px 7px;border-radius:8px">${b.topic}</span>`:''}
         <button class="di-del" onclick="tCancelBooking('${b.date}',${b.slot})">취소</button>
       </div>
     </div>`).join('');
@@ -1502,6 +1515,10 @@ function renderSCal(){
   renderCalGrid(sCalYear,sCalMonth,'s-cal-grid','s-cal-title','sCalClick');
   renderSMyBookings();
 }
+const TOPICS=['대학 입시','교우관계','가정문제','기타'];
+const TOPIC_ICONS=['🎓','👫','🏠','📌'];
+let bookState={dk:'',si:-1,topic:''};  // 현재 모달 상태
+
 function sCalClick(dk){
   if(!curSt)return;
   const bookings=getBookings();
@@ -1510,61 +1527,131 @@ function sCalClick(dk){
   const dateStr=`${y}년 ${parseInt(m)}월 ${parseInt(d)}일`;
   document.getElementById('book-title').textContent='📅 상담 예약';
   document.getElementById('book-date-str').textContent=dateStr;
+  // 초기화
+  bookState={dk,si:-1,topic:''};
+  document.getElementById('book-topic-wrap').style.display='none';
+  document.getElementById('book-confirm-btn').style.display='none';
+
   const slotsEl=document.getElementById('book-slots');
   slotsEl.innerHTML=SLOTS.map((s,si)=>{
     const bk=b[si];
     const isMe=bk&&bk.studentNo===curSt.no;
     const isTaken=bk&&!isMe;
     let cls=isTaken?'taken':isMe?'mine':'avail';
-    let label=isTaken?`${s} — 마감`
-      :isMe?`${s} — ✅ 내 예약 (클릭 시 취소)`
-      :`${s} — 예약하기`;
-    return `<button class="book-slot-btn ${cls}" onclick="bookSlot('${dk}',${si},${isMe})">${label}</button>`;
+    let topicBadge=bk?.topic?` <span style="font-size:11px;opacity:.8">[${bk.topic}]</span>`:'';
+    let label=isTaken
+      ?`${s} — 마감${topicBadge}`
+      :isMe
+        ?`<div>${s} — ✅ 내 예약${topicBadge}</div><div style="font-size:11px;margin-top:3px;opacity:.8">클릭: 취소 또는 변경</div>`
+        :`${s} — 예약하기`;
+    return `<button class="book-slot-btn ${cls}" onclick="selectSlot('${dk}',${si},${isMe},${isTaken})">${label}</button>`;
   }).join('');
   document.getElementById('book-overlay').classList.add('active');
 }
-function closeBooking(){document.getElementById('book-overlay').classList.remove('active');}
-function bookSlot(dk,si,isMe){
-  if(!curSt)return;
+
+function selectSlot(dk,si,isMe,isTaken){
+  if(isTaken)return;
+  bookState.dk=dk; bookState.si=si;
+
+  // 슬롯 버튼 선택 표시
+  document.querySelectorAll('.book-slot-btn').forEach((b,i)=>{
+    b.style.opacity=i===si?'1':'0.5';
+    b.style.transform=i===si?'scale(1.02)':'scale(1)';
+  });
+
+  if(isMe){
+    // 내 예약 → 취소 or 변경 선택
+    const topicWrap=document.getElementById('book-topic-wrap');
+    topicWrap.style.display='';
+    document.getElementById('book-topic-btns').innerHTML=`
+      <button onclick="cancelMyBooking('${dk}',${si})"
+        style="grid-column:span 2;padding:11px;background:rgba(214,48,48,.08);border:1.5px solid rgba(214,48,48,.3);border-radius:var(--rs);font-family:'Nanum Gothic',sans-serif;font-size:13px;font-weight:700;color:var(--red);cursor:pointer">
+        ✕ 예약 취소하기
+      </button>
+      <div style="grid-column:span 2;font-size:12px;font-weight:700;color:var(--text2);margin-top:4px">또는 주제 변경 후 다시 확정:</div>
+      ${TOPICS.map((tp,ti)=>`
+        <button class="topic-btn" data-topic="${tp}" onclick="selectTopic('${tp}',this)"
+          style="padding:10px 8px;border:1.5px solid var(--border);border-radius:var(--rs);font-family:'Nanum Gothic',sans-serif;font-size:12px;font-weight:700;color:var(--text2);background:#fff;cursor:pointer;transition:all .2s">
+          ${TOPIC_ICONS[ti]} ${tp}
+        </button>`).join('')}
+    `;
+    document.getElementById('book-confirm-btn').style.display='';
+    document.getElementById('book-confirm-btn').textContent='변경 확정';
+  } else {
+    // 새 예약 → 주제 선택
+    const topicWrap=document.getElementById('book-topic-wrap');
+    topicWrap.style.display='';
+    document.getElementById('book-topic-btns').innerHTML=TOPICS.map((tp,ti)=>`
+      <button class="topic-btn" data-topic="${tp}" onclick="selectTopic('${tp}',this)"
+        style="padding:10px 8px;border:1.5px solid var(--border);border-radius:var(--rs);font-family:'Nanum Gothic',sans-serif;font-size:12px;font-weight:700;color:var(--text2);background:#fff;cursor:pointer;transition:all .2s">
+        ${TOPIC_ICONS[ti]} ${tp}
+      </button>`).join('');
+    document.getElementById('book-confirm-btn').style.display='';
+    document.getElementById('book-confirm-btn').textContent='예약 확정';
+  }
+}
+
+function selectTopic(tp,el){
+  bookState.topic=tp;
+  document.querySelectorAll('.topic-btn').forEach(b=>{
+    b.style.background=b.dataset.topic===tp?'var(--green)':'#fff';
+    b.style.color=b.dataset.topic===tp?'#fff':'var(--text2)';
+    b.style.borderColor=b.dataset.topic===tp?'var(--green)':'var(--border)';
+  });
+}
+
+function cancelMyBooking(dk,si){
+  if(!confirm('예약을 취소할까요?'))return;
+  if(!db._bookings) db._bookings={};
+  if(db._bookings[dk]) delete db._bookings[dk][si];
+  dbSave();closeBooking();renderSCal();toast('예약이 취소됐습니다.');
+}
+
+function confirmBooking(){
+  const {dk,si,topic}=bookState;
+  if(si<0){toast('❗ 타임을 선택해 주세요.');return;}
+  if(!topic){toast('❗ 상담 주제를 선택해 주세요.');return;}
   if(!db._bookings) db._bookings={};
   if(!db._bookings[dk]) db._bookings[dk]={};
-  if(isMe){
-    // 취소
-    if(!confirm('예약을 취소할까요?'))return;
-    delete db._bookings[dk][si];
-    dbSave();closeBooking();renderSCal();toast('예약이 취소됐습니다.');
-    return;
+  // 기존 내 예약 같은 날 다른 타임 확인 (변경 시 제외)
+  const myOtherSlot=Object.entries(db._bookings[dk]).find(([s,b])=>parseInt(s)!==si&&b.studentNo===curSt.no);
+  if(myOtherSlot){
+    if(!confirm(`이미 ${SLOTS[parseInt(myOtherSlot[0])]} 예약이 있어요. 변경할까요?`))return;
+    delete db._bookings[dk][parseInt(myOtherSlot[0])];
   }
-  // 이미 이 날 다른 타임에 예약했는지 확인
-  const existing=Object.entries(db._bookings[dk]||{}).find(([s,b])=>b.studentNo===curSt.no);
-  if(existing){toast('❗ 같은 날 이미 예약이 있어요!');return;}
-  // 이미 찬 슬롯인지
-  if(db._bookings[dk][si]){toast('❗ 이미 마감된 시간이에요!');return;}
-  db._bookings[dk][si]={studentNo:curSt.no,studentName:curSt.name,bookedAt:new Date().toISOString()};
-  // 알림
-  addNotif('univ',curSt.name,curSt.no,'상담 예약',`${dk} ${SLOTS[si]} 상담 예약`);
+  // 다른 날 예약 없는지는 허용 (날짜 다르면 OK)
+  db._bookings[dk][si]={studentNo:curSt.no,studentName:curSt.name,topic,bookedAt:new Date().toISOString()};
+  addNotif('univ',curSt.name,curSt.no,'상담 예약',`${dk} ${SLOTS[si]} [${topic}] 예약`);
   dbSave();closeBooking();renderSCal();
-  toast(`✅ ${dk} ${SLOTS[si]} 예약됐습니다!`);
+  toast(`✅ ${dk} ${SLOTS[si]} [${topic}] 예약됐습니다!`);
 }
+
+function closeBooking(){
+  document.getElementById('book-overlay').classList.remove('active');
+  bookState={dk:'',si:-1,topic:''};
+}
+
 function renderSMyBookings(){
   const el=document.getElementById('s-my-bookings');
   const bookings=getBookings();
   const mine=[];
   Object.entries(bookings).forEach(([dk,slots])=>{
     Object.entries(slots).forEach(([si,b])=>{
-      if(b.studentNo===curSt?.no) mine.push({date:dk,slot:parseInt(si)});
+      if(b.studentNo===curSt?.no) mine.push({date:dk,slot:parseInt(si),topic:b.topic||''});
     });
   });
   mine.sort((a,b)=>a.date.localeCompare(b.date));
   const today=new Date().toISOString().split('T')[0];
   el.innerHTML=mine.length?mine.map(b=>`
     <div class="diary-item">
-      <div class="di-head">
+      <div class="di-head" style="flex-wrap:wrap;gap:6px">
         <span class="di-date">📅 ${b.date}</span>
         <span class="di-name">${SLOTS[b.slot]}</span>
+        ${b.topic?`<span style="font-size:11px;font-weight:700;color:var(--purple);background:rgba(107,63,160,.1);padding:2px 7px;border-radius:8px">${b.topic}</span>`:''}
         <span style="font-size:11px;color:${b.date>=today?'var(--green)':'var(--text3)'}">
           ${b.date>=today?'✅ 예정':'(완료)'}
         </span>
+        ${b.date>=today?`<button class="di-del" onclick="cancelMyBooking('${b.date}',${b.slot})">취소</button>`:''}
       </div>
     </div>`).join('')
     :'<div style="font-size:13px;color:var(--text3);padding:10px 0">예약된 상담이 없습니다.</div>';
