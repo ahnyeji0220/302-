@@ -350,6 +350,7 @@ body{font-family:'Nanum Gothic',sans-serif;color:var(--text);}
 .cal-slot.open{background:rgba(64,145,108,.12);color:var(--green);}
 .cal-slot.booked-me{background:rgba(30,77,183,.12);color:var(--blue);}
 .cal-slot.booked-other{background:rgba(30,77,183,.1);color:#1a4db0;font-weight:700;}
+.cal-slot.booked-closed{background:rgba(214,48,48,.08);color:#a02020;text-decoration:line-through;}
 .cal-slot.full-slot{background:var(--surface2);color:var(--text3);}
 
 /* Booking modal */
@@ -1633,7 +1634,7 @@ function renderCalGrid(year,month,gridId,titleId,clickFn){
       inner+=SLOTS.map((s,si)=>{
         const b=dayBookings[si];
         if(!b) return `<div class="cal-slot open">✓ ${si===0?'1타임':'2타임'} 예약가능</div>`;
-        if(b.type==='closed') return `<div class="cal-slot booked-other">${si===0?'1타임':'2타임'} 예약마감</div>`;
+        if(b.type==='closed') return `<div class="cal-slot booked-closed">${si===0?'1타임':'2타임'} 예약마감</div>`;
         const isMe=curSt&&b.studentNo===curSt.no;
         if(isMe) return `<div class="cal-slot booked-me">✓ 내 예약 (${si===0?'1타임':'2타임'})</div>`;
         return curRole==='teacher'
