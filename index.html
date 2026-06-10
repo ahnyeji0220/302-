@@ -638,12 +638,12 @@ body{font-family:'Nanum Gothic',sans-serif;color:var(--text);}
           <button class="btn-sm" style="margin-top:9px" onclick="saveFb()">피드백 저장</button>
         </div>
         <div class="card">
-          <div class="card-h">대교협 기준 <span class="teacher-only-badge">🔒 교사 전용</span></div>
+          <div class="card-h">대교협 기준 분석</div>
           <textarea class="fb-ta" id="d-kcue" placeholder="대교협 기준 분석 내용을 입력하세요..."></textarea>
           <button class="btn-sm" style="margin-top:9px" onclick="saveKcue()">저장</button>
         </div>
         <div class="card">
-          <div class="card-h">상담 기록 <span class="teacher-only-badge">🔒 교사 전용</span></div>
+          <div class="card-h">상담 기록</div>
           <div id="d-clist"></div>
           <div class="ac-form">
             <div class="ac-form-title">새 상담 기록 추가</div>
@@ -969,6 +969,14 @@ body{font-family:'Nanum Gothic',sans-serif;color:var(--text);}
         <div class="card-h">🏫 담임선생님 대학별 의견</div>
         <div id="s-teacher-opinions"></div>
         <div id="s-teacher-total-opinion" style="margin-top:14px"></div>
+      </div>
+      <div class="card" id="s-kcue-card">
+        <div class="card-h">📊 대교협 기준 분석</div>
+        <div id="s-kcue-area" style="font-size:13px;color:var(--text);line-height:1.8;white-space:pre-wrap;min-height:30px"></div>
+      </div>
+      <div class="card">
+        <div class="card-h">📝 상담 기록</div>
+        <div id="s-clist-area"></div>
       </div>
     </div>
 
@@ -1941,7 +1949,9 @@ function addConsult(){
   // 학생 알림
   addSNotif(curTSt.no,'consult',`${dt} 상담 기록이 추가됐어요 — "${ct.slice(0,40)}${ct.length>40?'…':''}"`);
   dbSave();renderClist(k);renderOv();
-  document.getElementById('ac-ta').value='';toast('📝 상담 기록이 추가되었습니다.');
+  document.getElementById('ac-ta').value='';
+  document.getElementById('ac-date').value=new Date().toISOString().slice(0,10);
+  toast('📝 상담 기록이 추가되었습니다.');
 }
 function delConsult(k,i){
   if(!confirm('삭제할까요?'))return;
@@ -2370,6 +2380,26 @@ function loadFb(){
         <div style="font-size:12px;font-weight:700;color:var(--navy);margin-bottom:6px">📝 담임선생님 종합 의견</div>
         <div style="font-size:13px;color:var(--text);line-height:1.7">${total.replace(/\n/g,'<br>')}</div>
       </div>`:'';
+  }
+  // 대교협 기준
+  const kcueEl=document.getElementById('s-kcue-area');
+  const kcueCard=document.getElementById('s-kcue-card');
+  if(kcueEl){
+    const kcue=d.kcue||'';
+    kcueEl.innerHTML=kcue?kcue.replace(/
+/g,'<br>'):'<span style="color:var(--text3)">아직 등록된 내용이 없습니다.</span>';
+    if(kcueCard) kcueCard.style.display=kcue?'':'none';
+  }
+  // 상담 기록
+  const clistEl=document.getElementById('s-clist-area');
+  if(clistEl){
+    const cl=d.consults||[];
+    clistEl.innerHTML=cl.length?[...cl].reverse().map(c=>`
+      <div class="ci">
+        <div class="ci-head"><span class="ci-date">📅 ${c.date}</span></div>
+        <div class="ci-body">${c.content.replace(/\n/g,'<br>')}</div>
+      </div>`).join('')
+      :'<div style="font-size:13px;color:var(--text3)">아직 상담 기록이 없습니다.</div>';
   }
 }
 
