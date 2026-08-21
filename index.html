@@ -6,6 +6,7 @@
 <title>3학년 2반 이노무 시키들의 기록</title>
 <link href="https://fonts.googleapis.com/css2?family=Gaegu:wght@300;400;700&family=Nanum+Gothic+Coding&family=Nanum+Gothic:wght@400;700;800&family=Jua&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 <style>
@@ -569,6 +570,8 @@ body{font-family:'Nanum Gothic',sans-serif;color:var(--text);}
       <button class="tab-btn active" onclick="tTab('overview')">📊 전체 현황</button>
       <button class="tab-btn" id="tt-detail" style="display:none" onclick="tTab('detail')">👤 학생 상세</button>
       <button class="tab-btn" onclick="tTab('calendar-t')">📅 상담 캘린더</button>
+      <button class="tab-btn" onclick="tTab('field-t')">🚌 현장체험학습</button>
+      <button class="tab-btn" onclick="tTab('apply-t')">🎓 수시 현황</button>
       <button class="tab-btn" onclick="tTab('diary-t')">📔 선행일지</button>
       <button class="tab-btn" onclick="tTab('praise-t')">♥ 칭찬 현황</button>
       <button class="tab-btn" onclick="tTab('reset-pw')">🔑 비밀번호 초기화</button>
@@ -594,6 +597,8 @@ body{font-family:'Nanum Gothic',sans-serif;color:var(--text);}
       <!-- 학생 서브탭 -->
       <div class="tab-bar" id="d-subtabbar" style="background:var(--surface2);">
         <button class="tab-btn active" onclick="dSubTab('univ')">🏫 희망 대학</button>
+        <button class="tab-btn" onclick="dSubTab('field')">🚌 현장체험학습</button>
+        <button class="tab-btn" onclick="dSubTab('apply')">🎓 수시 지원</button>
         <button class="tab-btn" onclick="dSubTab('gb')">📋 생기부 분석</button>
         <button class="tab-btn" onclick="dSubTab('diary-s')">📔 선행일지</button>
         <button class="tab-btn" onclick="dSubTab('praise-s')">♥ 칭찬내용</button>
@@ -616,6 +621,33 @@ body{font-family:'Nanum Gothic',sans-serif;color:var(--text);}
         <div class="card">
           <div class="card-h">학생 메모 <span style="font-size:11px;font-weight:400;color:var(--text3)">(학생이 직접 작성)</span></div>
           <div id="d-memo" style="font-size:13px;color:var(--text);line-height:1.7;min-height:40px;"></div>
+        </div>
+      </div>
+
+      <div class="tab-pane" id="dtp-field">
+        <div class="card">
+          <div class="card-h">현장체험학습 사용 현황</div>
+          <div id="d-field-summary" style="margin-bottom:14px"></div>
+          <div id="d-field-list"></div>
+          <div class="ac-form" style="margin-top:14px">
+            <div class="ac-form-title">새 기록 추가</div>
+            <div class="grid2" style="margin-bottom:10px">
+              <div class="fg"><label>시작일</label><input type="date" id="ft-start"></div>
+              <div class="fg"><label>종료일</label><input type="date" id="ft-end"></div>
+            </div>
+            <div class="grid2">
+              <div class="fg"><label>사용 일수 (자동계산, 수정 가능)</label><input type="number" id="ft-days" min="0" placeholder="예) 3"></div>
+              <div class="fg"><label>사유</label><input type="text" id="ft-reason" placeholder="예) 가족여행"></div>
+            </div>
+            <div style="margin-top:9px"><button class="btn-sm btn-teal" onclick="addFieldTrip()">기록 추가</button></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="tab-pane" id="dtp-apply">
+        <div class="card">
+          <div class="card-h">수시 지원 현황 <span style="font-size:11px;font-weight:400;color:var(--text3)">🔒 학생 본인 · 교사만 확인 가능 (학생이 직접 입력)</span></div>
+          <div id="d-apply-list"></div>
         </div>
       </div>
 
@@ -694,6 +726,56 @@ body{font-family:'Nanum Gothic',sans-serif;color:var(--text);}
       </div>
     </div>
 
+    <!-- 현장체험학습 (teacher) -->
+    <div class="tab-pane" id="tp-field-t">
+      <div class="cal-wrap">
+        <div style="background:linear-gradient(135deg,rgba(27,67,50,.06),rgba(27,67,50,.02));border-radius:var(--rs);padding:14px 16px;margin-bottom:16px;font-size:13px;color:var(--text2);line-height:1.7">
+          📌 <strong style="color:var(--navy)">현장체험학습 안내</strong><br>
+          현장체험학습은 연간 <strong>최대 20일</strong>까지 사용할 수 있습니다.<br>
+          날짜를 클릭하면 해당 날짜에 체험학습을 사용한 학생을 확인할 수 있습니다.
+        </div>
+        <div class="cal-header">
+          <div class="cal-title" id="f-cal-title"></div>
+          <div class="cal-nav">
+            <button class="btn-cal-nav" onclick="fCalMove(-1)">‹</button>
+            <button class="btn-cal-nav" onclick="fCalMove(1)">›</button>
+          </div>
+        </div>
+        <div class="cal-grid" id="f-cal-grid"></div>
+      </div>
+      <div class="card" id="f-cal-day-card" style="display:none">
+        <div class="card-h" id="f-cal-day-title">📅 선택한 날짜</div>
+        <div id="f-cal-day-list"></div>
+      </div>
+      <div class="card">
+        <div class="card-h">학생별 누적 사용일수 <span style="font-size:12px;font-weight:400;color:var(--text3);margin-left:4px">카드 클릭 → 학생별 기록 관리</span></div>
+        <div class="ov-grid" id="field-ov-grid"></div>
+      </div>
+    </div>
+
+    <!-- 수시 현황 (teacher) -->
+    <div class="tab-pane" id="tp-apply-t">
+      <div class="card">
+        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:14px">
+          <div class="card-h" style="margin-bottom:0">전체 수시 지원 현황 <span style="font-size:11px;font-weight:400;color:var(--text3)">🔒 학생 본인 · 교사만 확인 가능</span></div>
+          <button class="btn-sm btn-teal" onclick="exportApplyExcel()">📊 엑셀 다운로드</button>
+        </div>
+        <div style="overflow-x:auto">
+          <table style="width:100%;border-collapse:collapse;font-size:12px;min-width:900px">
+            <thead><tr style="background:var(--navy);color:#fff">
+              <th style="padding:8px;text-align:center;white-space:nowrap">번호</th>
+              <th style="padding:8px;text-align:center;white-space:nowrap">이름</th>
+              <th style="padding:8px;text-align:center;white-space:nowrap">지원 수</th>
+              <th style="padding:8px;text-align:center;white-space:nowrap">합격</th>
+              <th style="padding:8px;text-align:center;white-space:nowrap">등록완료</th>
+              <th style="padding:8px;text-align:center;white-space:nowrap">비고</th>
+            </tr></thead>
+            <tbody id="apply-ov-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
     <!-- 비밀번호 초기화 -->
     <div class="tab-pane" id="tp-reset-pw">
       <div class="card">
@@ -745,6 +827,7 @@ body{font-family:'Nanum Gothic',sans-serif;color:var(--text);}
     <div class="tab-bar">
       <button class="tab-btn active" onclick="sTab('univ')">📝 희망 대학</button>
       <button class="tab-btn" onclick="sTab('calendar')">📅 상담 예약</button>
+      <button class="tab-btn" onclick="sTab('apply')">🎓 수시 지원</button>
       <button class="tab-btn" onclick="sTab('gb')">📋 생기부 분석</button>
       <button class="tab-btn" onclick="sTab('diary')">📔 선행일지</button>
       <button class="tab-btn" onclick="sTab('praise')">♥ 칭찬하기</button>
@@ -959,6 +1042,15 @@ body{font-family:'Nanum Gothic',sans-serif;color:var(--text);}
       </div>
     </div>
 
+    <!-- 수시 지원 -->
+    <div class="tab-pane" id="sp-apply">
+      <div style="background:rgba(214,48,48,.06);border-left:4px solid var(--red);border-radius:var(--rx);padding:12px 14px;margin-bottom:16px;font-size:12px;color:var(--text2);line-height:1.6">
+        🔒 이 정보는 <strong>본인과 담임선생님만</strong> 볼 수 있습니다. 진학사 아이디/비밀번호를 정확히 입력해 주세요.
+      </div>
+      <div id="s-apply-cards"></div>
+      <button class="btn-submit" onclick="appliSave()">저장하기</button>
+    </div>
+
     <!-- 피드백 -->
     <div class="tab-pane" id="sp-feedback">
       <div class="card">
@@ -1153,7 +1245,15 @@ const fbdb = firebase.database();
 // ══ DB ══
 // db는 메모리 캐시. Firebase에서 로드 후 유지.
 function defaultStudent(){
-  return {pw:DPW,changed:false,entries:[],memo:'',feedback:'',kcue:'',consults:[],gb:{},diaries:[],sNotifs:[]};
+  return {pw:DPW,changed:false,entries:[],memo:'',feedback:'',kcue:'',consults:[],gb:{},diaries:[],sNotifs:[],fieldTrips:[],applications:[]};
+}
+function defaultApplication(){
+  return {univ:'',dept:'',jinhaksaId:'',jinhaksaPw:'',result:'',waitNum:'',round:'',registered:''};
+}
+function ensureApplications(k){
+  if(!db[k].applications) db[k].applications=[];
+  while(db[k].applications.length<6) db[k].applications.push(defaultApplication());
+  if(db[k].applications.length>6) db[k].applications=db[k].applications.slice(0,6);
 }
 function K(s){return`${s.no}_${s.name}`;}
 
@@ -1172,6 +1272,8 @@ async function dbLoad(){
       if(!db[k].diaries) db[k].diaries=[];
       if(!db[k].sNotifs) db[k].sNotifs=[];
       if(!db[k].entries) db[k].entries=[];
+      if(!db[k].fieldTrips) db[k].fieldTrips=[];
+      ensureApplications(k);
       if(db[k].memo===undefined) db[k].memo='';
       if(!db[k].kcue) db[k].kcue='';
       if(!db[k].changed) db[k].changed=false;
@@ -1400,13 +1502,13 @@ function tTab(t){
   // 모든 탭 버튼 비활성화
   document.querySelectorAll('#t-tabbar .tab-btn').forEach(b=>b.classList.remove('active'));
   // 모든 탭 패널 비활성화
-  document.querySelectorAll('#tp-overview,#tp-detail,#tp-calendar-t,#tp-diary-t,#tp-praise-t,#tp-reset-pw').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('#tp-overview,#tp-detail,#tp-calendar-t,#tp-field-t,#tp-apply-t,#tp-diary-t,#tp-praise-t,#tp-reset-pw').forEach(p=>p.classList.remove('active'));
   // 해당 패널 활성화
   const paneId='tp-'+t;
   const pane=document.getElementById(paneId);
   if(pane) pane.classList.add('active');
   // 해당 탭 버튼 활성화
-  const tabMap={'overview':0,'calendar-t':2,'diary-t':3,'praise-t':4,'reset-pw':5};
+  const tabMap={'overview':0,'calendar-t':2,'field-t':3,'apply-t':4,'diary-t':5,'praise-t':6,'reset-pw':7};
   const btns=document.querySelectorAll('#t-tabbar .tab-btn');
   if(t==='detail'){
     document.getElementById('tt-detail').style.display='';
@@ -1418,6 +1520,8 @@ function tTab(t){
   if(t==='diary-t') renderTDiaryList();
   if(t==='reset-pw') renderResetGrid();
   if(t==='calendar-t') renderTCal();
+  if(t==='field-t') renderFieldTab();
+  if(t==='apply-t') renderApplyOverview();
 }
 
 // ══ CALENDAR SYSTEM ══
@@ -1665,6 +1769,238 @@ function renderSMyBookings(){
     :'<div style="font-size:13px;color:var(--text3);padding:10px 0">예약된 상담이 없습니다.</div>';
 }
 
+// ══ 현장체험학습 (FIELD TRIP) ══
+const FIELD_MAX_DAYS=20;
+let fCalYear=new Date().getFullYear(), fCalMonth=new Date().getMonth();
+function calcTripDays(start,end){
+  if(!start||!end) return 0;
+  let s=new Date(start), e=new Date(end);
+  if(e<s) return 0;
+  let days=0;
+  for(let d=new Date(s); d<=e; d.setDate(d.getDate()+1)){
+    const dow=d.getDay();
+    if(dow!==0&&dow!==6) days++; // 주말 제외, 학교 수업일 기준
+  }
+  return days;
+}
+function studentTripDays(k){
+  const trips=(db[k]&&db[k].fieldTrips)||[];
+  return trips.reduce((sum,t)=>sum+(parseInt(t.days)||0),0);
+}
+function ftAutoCalc(){
+  const s=document.getElementById('ft-start').value, e=document.getElementById('ft-end').value;
+  if(s&&e) document.getElementById('ft-days').value=calcTripDays(s,e);
+}
+function addFieldTrip(){
+  const s=document.getElementById('ft-start').value;
+  const e=document.getElementById('ft-end').value;
+  const daysInput=document.getElementById('ft-days').value.trim();
+  const reason=document.getElementById('ft-reason').value.trim();
+  if(!s||!e){toast('❗ 시작일과 종료일을 입력해 주세요.');return;}
+  const days=daysInput?parseInt(daysInput):calcTripDays(s,e);
+  const k=K(curTSt);
+  if(!db[k].fieldTrips) db[k].fieldTrips=[];
+  db[k].fieldTrips.push({id:Date.now(),start:s,end:e,days,reason});
+  db[k].fieldTrips.sort((a,b)=>a.start.localeCompare(b.start));
+  dbSave();
+  document.getElementById('ft-start').value='';document.getElementById('ft-end').value='';
+  document.getElementById('ft-days').value='';document.getElementById('ft-reason').value='';
+  renderDetailField(k);
+  toast('🚌 현장체험학습 기록이 추가되었습니다.');
+}
+function delFieldTrip(k,id){
+  if(!confirm('이 기록을 삭제할까요?'))return;
+  db[k].fieldTrips=(db[k].fieldTrips||[]).filter(t=>t.id!==id);
+  dbSave();renderDetailField(k);
+}
+function renderDetailField(k){
+  if(!k)return;
+  const trips=(db[k]&&db[k].fieldTrips)||[];
+  const used=studentTripDays(k);
+  const over=used>FIELD_MAX_DAYS;
+  document.getElementById('d-field-summary').innerHTML=`
+    <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+      <span style="font-size:20px;font-weight:700;color:${over?'var(--red)':'var(--navy)'}">${used}일</span>
+      <span style="font-size:13px;color:var(--text3)">/ 연간 ${FIELD_MAX_DAYS}일 사용</span>
+      ${over?'<span style="font-size:11px;font-weight:700;color:#fff;background:var(--red);padding:2px 8px;border-radius:10px">한도 초과</span>':''}
+    </div>`;
+  const el=document.getElementById('d-field-list');
+  el.innerHTML=trips.length?trips.map(t=>`
+    <div class="ci">
+      <div class="ci-head">
+        <span class="ci-date">📅 ${t.start} ~ ${t.end} <span style="font-weight:400;color:var(--text3);font-size:11px">(${t.days}일)</span></span>
+        <button class="ci-del" onclick="delFieldTrip('${k}',${t.id})">삭제</button>
+      </div>
+      <div class="ci-body">${t.reason?t.reason:'<span style="color:var(--text3)">사유 미입력</span>'}</div>
+    </div>`).join('')
+    :'<div style="font-size:13px;color:var(--text3);padding:10px 0">등록된 기록이 없습니다.</div>';
+  ['ft-start','ft-end'].forEach(id=>{
+    const elx=document.getElementById(id);
+    if(elx&&!elx.dataset.bound){elx.addEventListener('change',ftAutoCalc);elx.dataset.bound='1';}
+  });
+}
+function fCalMove(dir){fCalMonth+=dir;if(fCalMonth<0){fCalMonth=11;fCalYear--;}if(fCalMonth>11){fCalMonth=0;fCalYear++;}renderFieldCal();}
+function fieldTripsOnDate(dk){
+  const list=[];
+  STUDENTS.forEach(s=>{
+    const k=K(s);
+    const trips=(db[k]&&db[k].fieldTrips)||[];
+    trips.forEach(t=>{
+      if(dk>=t.start&&dk<=t.end) list.push({no:s.no,name:s.name,trip:t});
+    });
+  });
+  return list;
+}
+function renderFieldCal(){
+  const title=document.getElementById('f-cal-title');
+  const grid=document.getElementById('f-cal-grid');
+  if(!title||!grid)return;
+  title.textContent=`${fCalYear}년 ${fCalMonth+1}월`;
+  const days=['일','월','화','수','목','금','토'];
+  let html=days.map((d,i)=>`<div class="cal-day-label ${i===0?'sun':i===6?'sat':''}">${d}</div>`).join('');
+  const first=new Date(fCalYear,fCalMonth,1).getDay();
+  const last=new Date(fCalYear,fCalMonth+1,0).getDate();
+  const today=new Date();
+  const todayKey=dateKey(today.getFullYear(),today.getMonth(),today.getDate());
+  for(let i=0;i<first;i++) html+=`<div class="cal-cell empty"></div>`;
+  for(let d=1;d<=last;d++){
+    const dk=dateKey(fCalYear,fCalMonth,d);
+    const dow=(first+d-1)%7;
+    const list=fieldTripsOnDate(dk);
+    let cls='cal-cell';
+    if(dk===todayKey) cls+=' today';
+    if(dow===0) cls+=' sun'; if(dow===6) cls+=' sat';
+    const chips=list.slice(0,3).map(x=>`<div class="cal-slot booked-other">🚌 ${x.no}번 ${x.name}</div>`).join('');
+    const more=list.length>3?`<div class="cal-slot open">+${list.length-3}명</div>`:'';
+    html+=`<div class="${cls}" onclick="fCalClick('${dk}')">
+      <div class="cal-date">${d}</div>
+      ${chips}${more}
+    </div>`;
+  }
+  grid.innerHTML=html;
+}
+function fCalClick(dk){
+  const list=fieldTripsOnDate(dk);
+  const card=document.getElementById('f-cal-day-card');
+  document.getElementById('f-cal-day-title').textContent=`📅 ${dk} 현장체험학습 사용 학생`;
+  document.getElementById('f-cal-day-list').innerHTML=list.length?list.map(x=>`
+    <div class="diary-item">
+      <div class="di-head" style="flex-wrap:wrap;gap:6px">
+        <span style="font-size:13px;font-weight:700;color:var(--navy)">${x.no}번 ${x.name}</span>
+        <span class="di-date">📅 ${x.trip.start} ~ ${x.trip.end} (${x.trip.days}일)</span>
+        ${x.trip.reason?`<span style="font-size:12px;color:var(--text2)">${x.trip.reason}</span>`:''}
+        <button class="btn-sm" style="padding:5px 10px;font-size:11px" onclick="openDetail(${x.no});dSubTab('field')">상세보기</button>
+      </div>
+    </div>`).join('')
+    :'<div style="font-size:13px;color:var(--text3);padding:6px 0">이 날짜에 사용한 학생이 없습니다.</div>';
+  card.style.display='';
+}
+function renderFieldOverview(){
+  const g=document.getElementById('field-ov-grid');
+  if(!g)return;
+  g.innerHTML='';
+  STUDENTS.forEach(s=>{
+    const k=K(s);
+    if(!db[k]) db[k]=defaultStudent();
+    const used=studentTripDays(k);
+    const over=used>FIELD_MAX_DAYS;
+    g.innerHTML+=`<div class="ov-card" onclick="openDetail(${s.no});dSubTab('field')">
+      <div class="ov-top"><span class="ov-num">${s.no}번</span><span class="ov-dot ${used>0?'data':''}"></span></div>
+      <div class="ov-name">${s.name}</div>
+      <div class="ov-cnt" style="${over?'color:var(--red);font-weight:700':''}">🚌 ${used}/${FIELD_MAX_DAYS}일</div>
+    </div>`;
+  });
+}
+function renderFieldTab(){
+  renderFieldCal();
+  renderFieldOverview();
+  document.getElementById('f-cal-day-card').style.display='none';
+}
+
+// ══ 수시 지원 현황 (APPLICATIONS) ══
+const APPLY_RESULTS=['','합격','불합격','예비','발표대기'];
+function renderDetailApply(k){
+  if(!k)return;
+  ensureApplications(k);
+  const apps=db[k].applications;
+  const el=document.getElementById('d-apply-list');
+  el.innerHTML=apps.map((a,i)=>`
+    <div class="ev-card">
+      <div class="ev-head">
+        <div style="display:flex;align-items:baseline;gap:8px;flex-wrap:wrap">
+          <div class="ev-univ">${i+1}. ${a.univ||'(미입력)'}</div>
+          <div style="font-size:13px;font-weight:600;opacity:.85">${a.dept||''}</div>
+        </div>
+        ${a.result?`<span class="lvb" style="background:${a.result==='합격'?'var(--green)':a.result==='불합격'?'var(--slate)':'var(--orange)'};color:#fff">${a.result}</span>`:''}
+      </div>
+      <div class="ev-grid">
+        <div class="ev-f"><div class="fl">진학사 아이디</div><div class="fv">${a.jinhaksaId||'-'}</div></div>
+        <div class="ev-f"><div class="fl">진학사 비밀번호</div><div class="fv">${a.jinhaksaPw||'-'}</div></div>
+        <div class="ev-f"><div class="fl">예비번호</div><div class="fv">${a.waitNum||'-'}</div></div>
+        <div class="ev-f"><div class="fl">몇차 합격</div><div class="fv">${a.round?a.round+'차':'-'}</div></div>
+        <div class="ev-f"><div class="fl">등록완료</div><div class="fv">${a.registered==='예'?'✅ 예':a.registered==='아니오'?'아니오':'-'}</div></div>
+        <div class="ev-f"><div class="fl">결과</div><div class="fv">${a.result||'-'}</div></div>
+      </div>
+    </div>`).join('');
+}
+function applyRegisteredCount(k){
+  ensureApplications(k);
+  return db[k].applications.filter(a=>a.registered==='예').length;
+}
+function applyPassCount(k){
+  ensureApplications(k);
+  return db[k].applications.filter(a=>a.result==='합격').length;
+}
+function applyFilledCount(k){
+  ensureApplications(k);
+  return db[k].applications.filter(a=>a.univ&&a.univ.trim()).length;
+}
+function renderApplyOverview(){
+  const tb=document.getElementById('apply-ov-tbody');
+  if(!tb)return;
+  tb.innerHTML=STUDENTS.map(s=>{
+    const k=K(s);
+    if(!db[k]) db[k]=defaultStudent();
+    ensureApplications(k);
+    const filled=applyFilledCount(k);
+    const pass=applyPassCount(k);
+    const reg=applyRegisteredCount(k);
+    return `<tr style="border-bottom:1px solid var(--border);cursor:pointer" onclick="openDetail(${s.no});dSubTab('apply')">
+      <td style="padding:8px;text-align:center">${s.no}</td>
+      <td style="padding:8px;text-align:center;font-weight:700;color:var(--navy)">${s.name}</td>
+      <td style="padding:8px;text-align:center">${filled}/6</td>
+      <td style="padding:8px;text-align:center;${pass?'color:var(--teal);font-weight:700':''}">${pass}</td>
+      <td style="padding:8px;text-align:center;${reg?'color:var(--pink);font-weight:700':''}">${reg}</td>
+      <td style="padding:8px;text-align:center;font-size:11px;color:var(--text3)">${filled===0?'미입력':''}</td>
+    </tr>`;
+  }).join('');
+}
+function exportApplyExcel(){
+  if(typeof XLSX==='undefined'){toast('⚠️ 엑셀 라이브러리를 불러오지 못했습니다. 네트워크를 확인해 주세요.');return;}
+  const rows=[];
+  STUDENTS.forEach(s=>{
+    const k=K(s);
+    if(!db[k]) return;
+    ensureApplications(k);
+    db[k].applications.forEach((a,i)=>{
+      if(!a.univ&&!a.dept&&!a.jinhaksaId) return;
+      rows.push({
+        '번호':s.no,'이름':s.name,'지원순번':i+1,
+        '대학명':a.univ||'',학과:a.dept||'',
+        '진학사아이디':a.jinhaksaId||'','진학사비밀번호':a.jinhaksaPw||'',
+        '결과':a.result||'','예비번호':a.waitNum||'','몇차합격':a.round||'',
+        '등록완료':a.registered||''
+      });
+    });
+  });
+  if(!rows.length){toast('❗ 다운로드할 지원 데이터가 없습니다.');return;}
+  const ws=XLSX.utils.json_to_sheet(rows);
+  const wb=XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb,ws,'수시지원현황');
+  const today=new Date().toISOString().split('T')[0];
+  XLSX.writeFile(wb,`수시지원현황_${today}.xlsx`);
+}
+
 function renderResetGrid(){
   const g=document.getElementById('reset-grid');
   g.innerHTML=STUDENTS.map(s=>{
@@ -1693,12 +2029,14 @@ function resetStudentPw(no){
 }
 function dSubTab(t){
   document.querySelectorAll('#d-subtabbar .tab-btn').forEach(b=>b.classList.remove('active'));
-  document.querySelectorAll('#dtp-univ,#dtp-gb,#dtp-diary-s,#dtp-praise-s,#dtp-fb').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('#dtp-univ,#dtp-field,#dtp-apply,#dtp-gb,#dtp-diary-s,#dtp-praise-s,#dtp-fb').forEach(p=>p.classList.remove('active'));
   const pane=document.getElementById('dtp-'+t);
   if(pane) pane.classList.add('active');
-  const idx={'univ':0,'gb':1,'diary-s':2,'praise-s':3,'fb':4};
+  const idx={'univ':0,'field':1,'apply':2,'gb':3,'diary-s':4,'praise-s':5,'fb':6};
   const btns=document.querySelectorAll('#d-subtabbar .tab-btn');
   if(idx[t]!==undefined&&btns[idx[t]]) btns[idx[t]].classList.add('active');
+  if(t==='field') renderDetailField(K(curTSt));
+  if(t==='apply') renderDetailApply(K(curTSt));
 }
 
 // ══ OVERVIEW ══
@@ -2053,7 +2391,7 @@ function initStudent(){
   sCalMonth=new Date().getMonth();
 }
 function sTab(t){
-  const tabs=['univ','calendar','gb','diary','praise','praiseboard','feedback','example'];
+  const tabs=['univ','calendar','apply','gb','diary','praise','praiseboard','feedback','example'];
   document.querySelectorAll('.s-body .tab-btn').forEach((b,i)=>b.classList.toggle('active',tabs[i]===t));
   // 모든 학생 패널 비활성화
   tabs.forEach(n=>{
@@ -2063,6 +2401,7 @@ function sTab(t){
   if(t==='praiseboard') loadPraiseBoard();
   if(t==='feedback') loadFb();
   if(t==='calendar') renderSCal();
+  if(t==='apply') loadApply();
 }
 function loadInput(){
   const d=db[K(curSt)];
@@ -2275,6 +2614,57 @@ function gbSave(){
   dbSave();toast('📋 생기부 분석이 저장되었습니다!');
 }
 
+// ══ 수시 지원 (student) ══
+function loadApply(){
+  const k=K(curSt);
+  ensureApplications(k);
+  const apps=db[k].applications;
+  const el=document.getElementById('s-apply-cards');
+  el.innerHTML=apps.map((a,i)=>`
+    <div class="card">
+      <div class="card-h">${i+1}번째 지원 대학</div>
+      <div class="grid2">
+        <div class="fg"><label>대학명</label><input type="text" id="ap${i}_univ" value="${a.univ||''}" placeholder="예) 서울대학교"></div>
+        <div class="fg"><label>학과</label><input type="text" id="ap${i}_dept" value="${a.dept||''}" placeholder="예) 경영학과"></div>
+        <div class="fg"><label>진학사 아이디</label><input type="text" id="ap${i}_jid" value="${a.jinhaksaId||''}" placeholder="진학사 로그인 아이디"></div>
+        <div class="fg"><label>진학사 비밀번호</label><input type="text" id="ap${i}_jpw" value="${a.jinhaksaPw||''}" placeholder="진학사 로그인 비밀번호"></div>
+        <div class="fg"><label>합격 여부</label>
+          <select id="ap${i}_result">${APPLY_RESULTS.map(r=>`<option value="${r}" ${a.result===r?'selected':''}>${r===''?'-- 선택 --':r}</option>`).join('')}</select>
+        </div>
+        <div class="fg"><label>예비번호</label><input type="text" id="ap${i}_wait" value="${a.waitNum||''}" placeholder="예) 12번"></div>
+        <div class="fg"><label>몇차 합격</label><input type="text" id="ap${i}_round" value="${a.round||''}" placeholder="예) 2"></div>
+        <div class="fg"><label>등록 완료</label>
+          <select id="ap${i}_reg">
+            <option value="" ${a.registered===''?'selected':''}>-- 선택 --</option>
+            <option value="예" ${a.registered==='예'?'selected':''}>예</option>
+            <option value="아니오" ${a.registered==='아니오'?'selected':''}>아니오</option>
+          </select>
+        </div>
+      </div>
+    </div>`).join('');
+}
+function appliSave(){
+  const k=K(curSt);
+  ensureApplications(k);
+  const apps=[];
+  for(let i=0;i<6;i++){
+    apps.push({
+      univ:document.getElementById(`ap${i}_univ`)?.value.trim()||'',
+      dept:document.getElementById(`ap${i}_dept`)?.value.trim()||'',
+      jinhaksaId:document.getElementById(`ap${i}_jid`)?.value.trim()||'',
+      jinhaksaPw:document.getElementById(`ap${i}_jpw`)?.value.trim()||'',
+      result:document.getElementById(`ap${i}_result`)?.value||'',
+      waitNum:document.getElementById(`ap${i}_wait`)?.value.trim()||'',
+      round:document.getElementById(`ap${i}_round`)?.value.trim()||'',
+      registered:document.getElementById(`ap${i}_reg`)?.value||'',
+    });
+  }
+  db[k].applications=apps;
+  const filled=apps.filter(a=>a.univ).length;
+  addNotif('univ',curSt.name,curSt.no,'수시 지원','수시 지원 현황을 저장했습니다. ('+filled+'개 대학 입력)');
+  dbSave();toast('🎓 수시 지원 현황이 저장되었습니다!');
+}
+
 // ══ DIARY ══
 function addDiary(){
   const dt=document.getElementById('diary-date').value;
@@ -2386,7 +2776,8 @@ function loadFb(){
   const kcueCard=document.getElementById('s-kcue-card');
   if(kcueEl){
     const kcue=d.kcue||'';
-    kcueEl.innerHTML=kcue?kcue.replace(/\n/g,'<br>'):'<span style="color:var(--text3)">아직 등록된 내용이 없습니다.</span>';
+    kcueEl.innerHTML=kcue?kcue.replace(/
+/g,'<br>'):'<span style="color:var(--text3)">아직 등록된 내용이 없습니다.</span>';
     if(kcueCard) kcueCard.style.display=kcue?'':'none';
   }
   // 상담 기록
