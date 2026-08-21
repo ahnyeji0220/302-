@@ -2776,8 +2776,7 @@ function loadFb(){
   const kcueCard=document.getElementById('s-kcue-card');
   if(kcueEl){
     const kcue=d.kcue||'';
-    kcueEl.innerHTML=kcue?kcue.replace(/
-/g,'<br>'):'<span style="color:var(--text3)">아직 등록된 내용이 없습니다.</span>';
+    kcueEl.innerHTML=kcue?kcue.replace(/\n/g,'<br>'):'<span style="color:var(--text3)">아직 등록된 내용이 없습니다.</span>';
     if(kcueCard) kcueCard.style.display=kcue?'':'none';
   }
   // 상담 기록
