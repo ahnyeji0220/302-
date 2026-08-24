@@ -736,7 +736,7 @@ body{font-family:'Pretendard',-apple-system,BlinkMacSystemFont,sans-serif;color:
 
       <div class="tab-pane" id="dtp-apply">
         <div class="card">
-          <div class="card-h">수시 지원 현황 <span style="font-size:11px;font-weight:400;color:var(--text3)">🔒 학생 본인 · 교사만 확인 가능 (학생이 직접 입력)</span></div>
+          <div class="card-h">수시 지원 현황 <span style="font-size:11px;font-weight:400;color:var(--text3)">🔒 학생 본인 · 교사만 확인/수정 가능</span></div>
           <div id="d-apply-list"></div>
         </div>
       </div>
@@ -2125,13 +2125,44 @@ function renderDetailApply(k){
     <div class="card apply-login-card">
       <div class="card-h">🔐 진학사 로그인 정보</div>
       <div class="grid2">
-        <div class="fg"><label>진학사 아이디</label><div class="fv-box">${s.jinhaksaId||'-'}</div></div>
-        <div class="fg"><label>진학사 비밀번호</label><div class="fv-box">${s.jinhaksaPw||'-'}</div></div>
+        <div class="fg"><label>진학사 아이디</label><input type="text" id="tjhs-id" value="${s.jinhaksaId||''}" placeholder="진학사 로그인 아이디" autocomplete="off"></div>
+        <div class="fg"><label>진학사 비밀번호</label><input type="text" id="tjhs-pw" value="${s.jinhaksaPw||''}" placeholder="진학사 로그인 비밀번호" autocomplete="off"></div>
       </div>
     </div>
     <div class="apply-list">
-      ${apps.map((a,i)=>applySchoolCardHtml(a,i,false)).join('')}
-    </div>`;
+      ${apps.map((a,i)=>applySchoolCardHtml(a,i,true,'tap')).join('')}
+    </div>
+    <button class="btn-submit" onclick="appliSaveTeacher('${k}')">저장하기</button>`;
+}
+function appliSaveTeacher(k){
+  ensureApplications(k);
+  db[k].jinhaksaId=document.getElementById('tjhs-id')?.value.trim()||'';
+  db[k].jinhaksaPw=document.getElementById('tjhs-pw')?.value.trim()||'';
+  const apps=[];
+  for(let i=0;i<6;i++){
+    apps.push({
+      school:document.getElementById(`tap${i}_school`)?.value.trim()||'',
+      dept:document.getElementById(`tap${i}_dept`)?.value.trim()||'',
+      track:document.getElementById(`tap${i}_track`)?.value||'',
+      subTrack:document.getElementById(`tap${i}_subtrack`)?.value||'',
+      subTrackCustom:document.getElementById(`tap${i}_subtrackCustom`)?.value.trim()||'',
+      stream:document.getElementById(`tap${i}_stream`)?.value||'',
+      trackContent:document.getElementById(`tap${i}_content`)?.value.trim()||'',
+      minReq:document.getElementById(`tap${i}_minreq`)?.value||'',
+      examDate:document.getElementById(`tap${i}_examdate`)?.value||'',
+      examTime:document.getElementById(`tap${i}_examtime`)?.value||'',
+      stage1Date:document.getElementById(`tap${i}_stage1`)?.value||'',
+      finalAnnounceDate:document.getElementById(`tap${i}_final`)?.value||'',
+      firstPass:document.getElementById(`tap${i}_firstpass`)?.value||'',
+      waitNum:document.getElementById(`tap${i}_waitnum`)?.value.trim()||'',
+      finalRound:document.getElementById(`tap${i}_finalround`)?.value.trim()||'',
+      registered:document.getElementById(`tap${i}_registered`)?.value||'',
+    });
+  }
+  db[k].applications=apps;
+  dbSave();
+  renderDetailApply(k);
+  toast('🎓 수시 지원 현황이 저장되었습니다!');
 }
 function applyRegisteredCount(k){
   ensureApplications(k);
@@ -2827,7 +2858,8 @@ function loadApply(){
       ${apps.map((a,i)=>applySchoolCardHtml(a,i,true)).join('')}
     </div>`;
 }
-function applySchoolCardHtml(a,i,editable){
+function applySchoolCardHtml(a,i,editable,prefix){
+  prefix=prefix||'ap';
   const dis=editable?'':'disabled';
   const statusBadge = a.registered==='O' ? `<span class="as-badge as-reg">등록완료</span>`
     : a.firstPass==='O' ? `<span class="as-badge as-pass">최초합격</span>`
@@ -2845,52 +2877,53 @@ function applySchoolCardHtml(a,i,editable){
       <div class="apply-school-body">
         <div class="as-section-label">기본 정보</div>
         <div class="grid2">
-          <div class="fg"><label>학교 이름</label><input type="text" id="ap${i}_school" value="${a.school||''}" placeholder="예) 서울대학교" ${dis}></div>
-          <div class="fg"><label>학과명 (모집단위)</label><input type="text" id="ap${i}_dept" value="${a.dept||''}" placeholder="예) 경영학과" ${dis}></div>
+          <div class="fg"><label>학교 이름</label><input type="text" id="${prefix}${i}_school" value="${a.school||''}" placeholder="예) 서울대학교" ${dis}></div>
+          <div class="fg"><label>학과명 (모집단위)</label><input type="text" id="${prefix}${i}_dept" value="${a.dept||''}" placeholder="예) 경영학과" ${dis}></div>
           <div class="fg"><label>전형</label>
-            <select id="ap${i}_track" ${dis}>${TRACK_TYPES.map(t=>`<option value="${t}" ${a.track===t?'selected':''}>${t===''?'-- 선택 --':t}</option>`).join('')}</select>
+            <select id="${prefix}${i}_track" ${dis}>${TRACK_TYPES.map(t=>`<option value="${t}" ${a.track===t?'selected':''}>${t===''?'-- 선택 --':t}</option>`).join('')}</select>
           </div>
           <div class="fg"><label>계열</label>
-            <select id="ap${i}_stream" ${dis}>${STREAM_TYPES.map(t=>`<option value="${t}" ${a.stream===t?'selected':''}>${t===''?'-- 선택 --':t}</option>`).join('')}</select>
+            <select id="${prefix}${i}_stream" ${dis}>${STREAM_TYPES.map(t=>`<option value="${t}" ${a.stream===t?'selected':''}>${t===''?'-- 선택 --':t}</option>`).join('')}</select>
           </div>
           <div class="fg sp2"><label>세부전형 명칭</label>
-            <select id="ap${i}_subtrack" onchange="toggleSubtrackCustom(${i})" ${dis}>${SUBTRACK_OPTIONS.map(t=>`<option value="${t}" ${a.subTrack===t?'selected':''}>${t===''?'-- 선택 --':t}</option>`).join('')}</select>
+            <select id="${prefix}${i}_subtrack" onchange="toggleSubtrackCustom(${i},'${prefix}')" ${dis}>${SUBTRACK_OPTIONS.map(t=>`<option value="${t}" ${a.subTrack===t?'selected':''}>${t===''?'-- 선택 --':t}</option>`).join('')}</select>
           </div>
-          <div class="fg sp2" id="ap${i}_subtrackCustomWrap" style="${a.subTrack==='기타'?'':'display:none'}">
-            <label>세부전형 명칭 (직접 입력)</label><input type="text" id="ap${i}_subtrackCustom" value="${a.subTrackCustom||''}" placeholder="세부전형 명칭을 직접 입력하세요" ${dis}>
+          <div class="fg sp2" id="${prefix}${i}_subtrackCustomWrap" style="${a.subTrack==='기타'?'':'display:none'}">
+            <label>세부전형 명칭 (직접 입력)</label><input type="text" id="${prefix}${i}_subtrackCustom" value="${a.subTrackCustom||''}" placeholder="세부전형 명칭을 직접 입력하세요" ${dis}>
           </div>
         </div>
         <div class="as-section-label">전형 내용 · 최저학력</div>
         <div class="grid2">
-          <div class="fg sp2"><label>전형 내용</label><textarea id="ap${i}_content" placeholder="예) 학생부100% / 1단계-학생부 70%(3배수), 2단계-면접30%" ${dis}>${a.trackContent||''}</textarea></div>
+          <div class="fg sp2"><label>전형 내용</label><textarea id="${prefix}${i}_content" placeholder="예) 학생부100% / 1단계-학생부 70%(3배수), 2단계-면접30%" ${dis}>${a.trackContent||''}</textarea></div>
           <div class="fg"><label>수능 최저학력 여부</label>
-            <select id="ap${i}_minreq" ${dis}><option value="" ${a.minReq===''?'selected':''}>-- 선택 --</option><option value="O" ${a.minReq==='O'?'selected':''}>O (있음)</option><option value="X" ${a.minReq==='X'?'selected':''}>X (없음)</option></select>
+            <select id="${prefix}${i}_minreq" ${dis}><option value="" ${a.minReq===''?'selected':''}>-- 선택 --</option><option value="O" ${a.minReq==='O'?'selected':''}>O (있음)</option><option value="X" ${a.minReq==='X'?'selected':''}>X (없음)</option></select>
           </div>
         </div>
         <div class="as-section-label">실기 · 면접 일정</div>
         <div class="grid2">
-          <div class="fg"><label>실기/면접 일정 (날짜)</label><input type="date" id="ap${i}_examdate" value="${a.examDate||''}" ${dis}></div>
-          <div class="fg"><label>실기/면접 시간</label><input type="time" id="ap${i}_examtime" value="${a.examTime||''}" ${dis}></div>
-          <div class="fg"><label>1단계 발표일</label><input type="date" id="ap${i}_stage1" value="${a.stage1Date||''}" ${dis}></div>
-          <div class="fg"><label>최종 발표일</label><input type="date" id="ap${i}_final" value="${a.finalAnnounceDate||''}" ${dis}></div>
+          <div class="fg"><label>실기/면접 일정 (날짜)</label><input type="date" id="${prefix}${i}_examdate" value="${a.examDate||''}" ${dis}></div>
+          <div class="fg"><label>실기/면접 시간</label><input type="time" id="${prefix}${i}_examtime" value="${a.examTime||''}" ${dis}></div>
+          <div class="fg"><label>1단계 발표일</label><input type="date" id="${prefix}${i}_stage1" value="${a.stage1Date||''}" ${dis}></div>
+          <div class="fg"><label>최종 발표일</label><input type="date" id="${prefix}${i}_final" value="${a.finalAnnounceDate||''}" ${dis}></div>
         </div>
         <div class="as-section-label">합격 결과</div>
         <div class="grid2">
           <div class="fg"><label>최초 합격 여부</label>
-            <select id="ap${i}_firstpass" ${dis}><option value="" ${a.firstPass===''?'selected':''}>-- 선택 --</option><option value="O" ${a.firstPass==='O'?'selected':''}>O (합격)</option><option value="X" ${a.firstPass==='X'?'selected':''}>X (불합격)</option></select>
+            <select id="${prefix}${i}_firstpass" ${dis}><option value="" ${a.firstPass===''?'selected':''}>-- 선택 --</option><option value="O" ${a.firstPass==='O'?'selected':''}>O (합격)</option><option value="X" ${a.firstPass==='X'?'selected':''}>X (불합격)</option></select>
           </div>
-          <div class="fg"><label>예비 번호</label><input type="text" id="ap${i}_waitnum" value="${a.waitNum||''}" placeholder="예) 12번" ${dis}></div>
-          <div class="fg"><label>최종 합격 (몇차)</label><input type="text" id="ap${i}_finalround" value="${a.finalRound||''}" placeholder="예) 2차" ${dis}></div>
+          <div class="fg"><label>예비 번호</label><input type="text" id="${prefix}${i}_waitnum" value="${a.waitNum||''}" placeholder="예) 12번" ${dis}></div>
+          <div class="fg"><label>최종 합격 (몇차)</label><input type="text" id="${prefix}${i}_finalround" value="${a.finalRound||''}" placeholder="예) 2차" ${dis}></div>
           <div class="fg"><label>등록 여부</label>
-            <select id="ap${i}_registered" ${dis}><option value="" ${a.registered===''?'selected':''}>-- 선택 --</option><option value="O" ${a.registered==='O'?'selected':''}>O (등록완료)</option><option value="X" ${a.registered==='X'?'selected':''}>X (미등록)</option></select>
+            <select id="${prefix}${i}_registered" ${dis}><option value="" ${a.registered===''?'selected':''}>-- 선택 --</option><option value="O" ${a.registered==='O'?'selected':''}>O (등록완료)</option><option value="X" ${a.registered==='X'?'selected':''}>X (미등록)</option></select>
           </div>
         </div>
       </div>
     </details>`;
 }
-function toggleSubtrackCustom(i){
-  const sel=document.getElementById(`ap${i}_subtrack`);
-  const wrap=document.getElementById(`ap${i}_subtrackCustomWrap`);
+function toggleSubtrackCustom(i,prefix){
+  prefix=prefix||'ap';
+  const sel=document.getElementById(`${prefix}${i}_subtrack`);
+  const wrap=document.getElementById(`${prefix}${i}_subtrackCustomWrap`);
   if(!sel||!wrap)return;
   wrap.style.display=sel.value==='기타'?'':'none';
 }
