@@ -177,11 +177,14 @@ body{font-family:'Pretendard',-apple-system,BlinkMacSystemFont,sans-serif;color:
 .apply-list{display:flex;flex-direction:column;gap:12px;}
 .apply-school{background:#fff;border:1.5px solid var(--border);border-radius:16px;overflow:hidden;transition:box-shadow .18s ease,border-color .18s ease;}
 .apply-school[open]{border-color:var(--border2);box-shadow:0 6px 20px rgba(21,58,45,.08);}
-.apply-school-summary{list-style:none;cursor:pointer;display:flex;align-items:center;gap:10px;padding:14px 18px;user-select:none;}
+.apply-school-summary{list-style:none;cursor:pointer;display:flex;align-items:center;gap:10px;padding:14px 18px;user-select:none;flex-wrap:wrap;}
 .apply-school-summary::-webkit-details-marker{display:none;}
 .as-num{flex-shrink:0;width:26px;height:26px;border-radius:50%;background:var(--navy);color:#fff;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;}
 .as-name{font-size:14.5px;font-weight:700;color:var(--navy);}
-.as-dept{font-size:12.5px;color:var(--text3);flex:1;}
+.as-dept{font-size:12.5px;color:var(--text3);}
+.as-track-wrap{flex:1;display:flex;gap:6px;flex-wrap:wrap;align-items:center;}
+.as-track{font-size:10.5px;font-weight:700;color:var(--teal);background:rgba(23,122,82,.1);padding:2px 8px;border-radius:20px;white-space:nowrap;}
+.as-subtrack{font-size:10.5px;font-weight:600;color:var(--text2);background:var(--surface2);border:1px solid var(--border);padding:2px 8px;border-radius:20px;white-space:nowrap;}
 .as-badge{font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;white-space:nowrap;}
 .as-badge.as-reg{background:rgba(217,90,134,.12);color:var(--pink);}
 .as-badge.as-pass{background:rgba(23,122,82,.12);color:var(--teal);}
@@ -189,6 +192,12 @@ body{font-family:'Pretendard',-apple-system,BlinkMacSystemFont,sans-serif;color:
 .as-chev{flex-shrink:0;color:var(--text3);transition:transform .2s ease;font-size:13px;}
 .apply-school[open] .as-chev{transform:rotate(180deg);}
 .apply-school-body{padding:6px 18px 20px;border-top:1px solid var(--border);}
+.as-remove-row{display:flex;justify-content:flex-end;padding-top:12px;}
+.as-remove-btn{background:none;border:none;color:var(--red);font-size:11.5px;font-weight:700;cursor:pointer;padding:4px 6px;border-radius:6px;transition:background .15s ease;}
+.as-remove-btn:hover{background:rgba(214,48,48,.08);}
+.btn-add-school{width:100%;display:flex;flex-direction:column;align-items:center;gap:2px;padding:16px;background:var(--surface2);border:1.5px dashed var(--border2);border-radius:14px;color:var(--teal);font-family:'Pretendard',sans-serif;font-size:13.5px;font-weight:700;cursor:pointer;transition:all .18s ease;margin-top:2px;}
+.btn-add-school:hover{background:var(--lime);border-color:var(--teal);}
+.btn-add-school .mini-lock{font-weight:500;}
 .as-section-label{font-size:11px;font-weight:800;color:var(--blue);letter-spacing:.3px;margin:16px 0 9px;}
 .apply-school-body .grid2{margin-bottom:0;}
 
@@ -1339,7 +1348,7 @@ function defaultStudent(){
 }
 const TRACK_TYPES=['','교과','종합','실기실적','논술'];
 const SUBTRACK_OPTIONS=['','실기우수자','학생부교과우수자','농어촌전형','학교장추천전형','기회균형I','기회균형II','실기전형','일반학생','기회균형전형(농어촌)','장애인 등 대상자','특수교육대상자','지역인재 특별전형','사회배려대상자','학생부종합우수자','기타'];
-const STREAM_TYPES=['','인문','자연'];
+const STREAM_TYPES=['','인문','자연','예체능'];
 function defaultApplication(){
   return {
     school:'',dept:'',track:'',subTrack:'',subTrackCustom:'',stream:'',
@@ -1357,7 +1366,7 @@ function ensureApplications(k){
     return merged;
   });
   while(db[k].applications.length<6) db[k].applications.push(defaultApplication());
-  if(db[k].applications.length>6) db[k].applications=db[k].applications.slice(0,6);
+  // 6개 초과 지원(전문대 포함 등)도 허용 - 더 이상 자르지 않음
   // 구버전: 학교별로 저장되던 진학사 아이디/비번을 학생 단위로 승격
   if(!db[k].jinhaksaId){
     const withId=db[k].applications.find(a=>a.jinhaksaId);
@@ -2130,36 +2139,64 @@ function renderDetailApply(k){
       </div>
     </div>
     <div class="apply-list">
-      ${apps.map((a,i)=>applySchoolCardHtml(a,i,true,'tap')).join('')}
+      ${apps.map((a,i)=>applySchoolCardHtml(a,i,true,'tap',k)).join('')}
     </div>
+    <button type="button" class="btn-add-school" onclick="addApplySchool('tap','${k}')">＋ 지원 대학 추가 <span class="mini-lock">전문대 등 6개를 초과해 지원할 때 사용하세요</span></button>
     <button class="btn-submit" onclick="appliSaveTeacher('${k}')">저장하기</button>`;
+}
+function collectApplyForm(prefix,count){
+  const apps=[];
+  for(let i=0;i<count;i++){
+    apps.push({
+      school:document.getElementById(`${prefix}${i}_school`)?.value.trim()||'',
+      dept:document.getElementById(`${prefix}${i}_dept`)?.value.trim()||'',
+      track:document.getElementById(`${prefix}${i}_track`)?.value||'',
+      subTrack:document.getElementById(`${prefix}${i}_subtrack`)?.value||'',
+      subTrackCustom:document.getElementById(`${prefix}${i}_subtrackCustom`)?.value.trim()||'',
+      stream:document.getElementById(`${prefix}${i}_stream`)?.value||'',
+      trackContent:document.getElementById(`${prefix}${i}_content`)?.value.trim()||'',
+      minReq:document.getElementById(`${prefix}${i}_minreq`)?.value||'',
+      examDate:document.getElementById(`${prefix}${i}_examdate`)?.value||'',
+      examTime:document.getElementById(`${prefix}${i}_examtime`)?.value||'',
+      stage1Date:document.getElementById(`${prefix}${i}_stage1`)?.value||'',
+      finalAnnounceDate:document.getElementById(`${prefix}${i}_final`)?.value||'',
+      firstPass:document.getElementById(`${prefix}${i}_firstpass`)?.value||'',
+      waitNum:document.getElementById(`${prefix}${i}_waitnum`)?.value.trim()||'',
+      finalRound:document.getElementById(`${prefix}${i}_finalround`)?.value.trim()||'',
+      registered:document.getElementById(`${prefix}${i}_registered`)?.value||'',
+    });
+  }
+  return apps;
+}
+function applyContainerSel(prefix){return prefix==='tap' ? '#d-apply-list .apply-school' : '#s-apply-cards .apply-school';}
+function addApplySchool(prefix,kArg){
+  const k=prefix==='tap' ? kArg : K(curSt);
+  ensureApplications(k);
+  const count=document.querySelectorAll(applyContainerSel(prefix)).length || db[k].applications.length;
+  const apps=collectApplyForm(prefix,count);
+  apps.push(defaultApplication());
+  db[k].applications=apps;
+  dbSave();
+  if(prefix==='tap') renderDetailApply(k); else loadApply();
+  toast('🏫 지원 대학이 추가되었습니다.');
+}
+function removeApplySchool(prefix,i,kArg){
+  if(!confirm('이 학교 정보를 삭제할까요? 입력된 내용이 사라집니다.'))return;
+  const k=prefix==='tap' ? kArg : K(curSt);
+  const count=document.querySelectorAll(applyContainerSel(prefix)).length;
+  const apps=collectApplyForm(prefix,count);
+  apps.splice(i,1);
+  db[k].applications=apps;
+  dbSave();
+  if(prefix==='tap') renderDetailApply(k); else loadApply();
+  toast('삭제되었습니다.');
 }
 function appliSaveTeacher(k){
   ensureApplications(k);
   db[k].jinhaksaId=document.getElementById('tjhs-id')?.value.trim()||'';
   db[k].jinhaksaPw=document.getElementById('tjhs-pw')?.value.trim()||'';
-  const apps=[];
-  for(let i=0;i<6;i++){
-    apps.push({
-      school:document.getElementById(`tap${i}_school`)?.value.trim()||'',
-      dept:document.getElementById(`tap${i}_dept`)?.value.trim()||'',
-      track:document.getElementById(`tap${i}_track`)?.value||'',
-      subTrack:document.getElementById(`tap${i}_subtrack`)?.value||'',
-      subTrackCustom:document.getElementById(`tap${i}_subtrackCustom`)?.value.trim()||'',
-      stream:document.getElementById(`tap${i}_stream`)?.value||'',
-      trackContent:document.getElementById(`tap${i}_content`)?.value.trim()||'',
-      minReq:document.getElementById(`tap${i}_minreq`)?.value||'',
-      examDate:document.getElementById(`tap${i}_examdate`)?.value||'',
-      examTime:document.getElementById(`tap${i}_examtime`)?.value||'',
-      stage1Date:document.getElementById(`tap${i}_stage1`)?.value||'',
-      finalAnnounceDate:document.getElementById(`tap${i}_final`)?.value||'',
-      firstPass:document.getElementById(`tap${i}_firstpass`)?.value||'',
-      waitNum:document.getElementById(`tap${i}_waitnum`)?.value.trim()||'',
-      finalRound:document.getElementById(`tap${i}_finalround`)?.value.trim()||'',
-      registered:document.getElementById(`tap${i}_registered`)?.value||'',
-    });
-  }
-  db[k].applications=apps;
+  const count=document.querySelectorAll(applyContainerSel('tap')).length;
+  db[k].applications=collectApplyForm('tap',count);
   dbSave();
   renderDetailApply(k);
   toast('🎓 수시 지원 현황이 저장되었습니다!');
@@ -2848,33 +2885,40 @@ function loadApply(){
   const el=document.getElementById('s-apply-cards');
   el.innerHTML=`
     <div class="card apply-login-card">
-      <div class="card-h">🔐 진학사 로그인 정보 <span class="mini-lock">한 번만 입력하면 6개 학교에 공통 적용</span></div>
+      <div class="card-h">🔐 진학사 로그인 정보 <span class="mini-lock">한 번만 입력하면 모든 학교에 공통 적용</span></div>
       <div class="grid2">
         <div class="fg"><label>진학사 아이디</label><input type="text" id="jhs-id" value="${s.jinhaksaId||''}" placeholder="진학사 로그인 아이디" autocomplete="off"></div>
         <div class="fg"><label>진학사 비밀번호</label><input type="text" id="jhs-pw" value="${s.jinhaksaPw||''}" placeholder="진학사 로그인 비밀번호" autocomplete="off"></div>
       </div>
     </div>
     <div class="apply-list">
-      ${apps.map((a,i)=>applySchoolCardHtml(a,i,true)).join('')}
-    </div>`;
+      ${apps.map((a,i)=>applySchoolCardHtml(a,i,true,'ap')).join('')}
+    </div>
+    <button type="button" class="btn-add-school" onclick="addApplySchool('ap')">＋ 지원 대학 추가 <span class="mini-lock">전문대 등 6개를 초과해 지원할 때 사용하세요</span></button>`;
 }
-function applySchoolCardHtml(a,i,editable,prefix){
+function applySchoolCardHtml(a,i,editable,prefix,k){
   prefix=prefix||'ap';
   const dis=editable?'':'disabled';
   const statusBadge = a.registered==='O' ? `<span class="as-badge as-reg">등록완료</span>`
     : a.firstPass==='O' ? `<span class="as-badge as-pass">최초합격</span>`
     : a.waitNum ? `<span class="as-badge as-wait">예비 ${a.waitNum}</span>`
     : '';
+  const subTrackLabel = a.subTrack==='기타' ? (a.subTrackCustom||'기타') : (a.subTrack||'');
   return `
     <details class="apply-school" ${i===0?'open':''}>
       <summary class="apply-school-summary">
         <span class="as-num">${i+1}</span>
         <span class="as-name">${a.school||`${i+1}번째 지원 대학`}</span>
         <span class="as-dept">${a.dept||''}</span>
+        <span class="as-track-wrap">
+          ${a.track?`<span class="as-track">${a.track}</span>`:''}
+          ${subTrackLabel?`<span class="as-subtrack">${subTrackLabel}</span>`:''}
+        </span>
         ${statusBadge}
         <span class="as-chev">⌄</span>
       </summary>
       <div class="apply-school-body">
+        ${editable?`<div class="as-remove-row"><button type="button" class="as-remove-btn" onclick="removeApplySchool('${prefix}',${i},'${k||''}')">🗑 이 학교 삭제</button></div>`:''}
         <div class="as-section-label">기본 정보</div>
         <div class="grid2">
           <div class="fg"><label>학교 이름</label><input type="text" id="${prefix}${i}_school" value="${a.school||''}" placeholder="예) 서울대학교" ${dis}></div>
@@ -2932,27 +2976,8 @@ function appliSave(){
   ensureApplications(k);
   db[k].jinhaksaId=document.getElementById('jhs-id')?.value.trim()||'';
   db[k].jinhaksaPw=document.getElementById('jhs-pw')?.value.trim()||'';
-  const apps=[];
-  for(let i=0;i<6;i++){
-    apps.push({
-      school:document.getElementById(`ap${i}_school`)?.value.trim()||'',
-      dept:document.getElementById(`ap${i}_dept`)?.value.trim()||'',
-      track:document.getElementById(`ap${i}_track`)?.value||'',
-      subTrack:document.getElementById(`ap${i}_subtrack`)?.value||'',
-      subTrackCustom:document.getElementById(`ap${i}_subtrackCustom`)?.value.trim()||'',
-      stream:document.getElementById(`ap${i}_stream`)?.value||'',
-      trackContent:document.getElementById(`ap${i}_content`)?.value.trim()||'',
-      minReq:document.getElementById(`ap${i}_minreq`)?.value||'',
-      examDate:document.getElementById(`ap${i}_examdate`)?.value||'',
-      examTime:document.getElementById(`ap${i}_examtime`)?.value||'',
-      stage1Date:document.getElementById(`ap${i}_stage1`)?.value||'',
-      finalAnnounceDate:document.getElementById(`ap${i}_final`)?.value||'',
-      firstPass:document.getElementById(`ap${i}_firstpass`)?.value||'',
-      waitNum:document.getElementById(`ap${i}_waitnum`)?.value.trim()||'',
-      finalRound:document.getElementById(`ap${i}_finalround`)?.value.trim()||'',
-      registered:document.getElementById(`ap${i}_registered`)?.value||'',
-    });
-  }
+  const count=document.querySelectorAll(applyContainerSel('ap')).length;
+  const apps=collectApplyForm('ap',count);
   db[k].applications=apps;
   const filled=apps.filter(a=>a.school).length;
   addNotif('univ',curSt.name,curSt.no,'수시 지원','수시 지원 현황을 저장했습니다. ('+filled+'개 대학 입력)');
