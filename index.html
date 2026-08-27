@@ -1352,7 +1352,7 @@ const STREAM_TYPES=['','인문','자연','예체능'];
 function defaultApplication(){
   return {
     school:'',dept:'',track:'',subTrack:'',subTrackCustom:'',stream:'',
-    trackContent:'',minReq:'',
+    trackContent:'',minReq:'',level:'',
     examDate:'',examTime:'',
     stage1Date:'',finalAnnounceDate:'',
     firstPass:'',waitNum:'',finalRound:'',registered:''
@@ -2156,6 +2156,7 @@ function collectApplyForm(prefix,count){
       stream:document.getElementById(`${prefix}${i}_stream`)?.value||'',
       trackContent:document.getElementById(`${prefix}${i}_content`)?.value.trim()||'',
       minReq:document.getElementById(`${prefix}${i}_minreq`)?.value||'',
+      level:document.querySelector(`input[name="${prefix}${i}_level"]:checked`)?.value||'',
       examDate:document.getElementById(`${prefix}${i}_examdate`)?.value||'',
       examTime:document.getElementById(`${prefix}${i}_examtime`)?.value||'',
       stage1Date:document.getElementById(`${prefix}${i}_stage1`)?.value||'',
@@ -2190,6 +2191,39 @@ function removeApplySchool(prefix,i,kArg){
   dbSave();
   if(prefix==='tap') renderDetailApply(k); else loadApply();
   toast('삭제되었습니다.');
+}
+// 희망 대학 입력 내용을 수시 지원 현황으로 그대로 복사
+const TYPE_TO_TRACK={'학생부종합':'종합','학생부교과':'교과','논술':'논술','실기/실적':'실기실적','수능(정시)':''};
+function copyEntryToApply(k,ei){
+  const s=db[k];
+  if(!s||!s.entries||!s.entries[ei]){toast('❗ 희망 대학 정보를 찾을 수 없습니다.');return;}
+  const e=s.entries[ei];
+  if(!e.university||!e.university.trim()){toast('❗ 희망 대학명을 먼저 입력해 주세요.');return;}
+  ensureApplications(k);
+  const apps=s.applications;
+  const track=TYPE_TO_TRACK[e.type]||'';
+  const isKnownSub=SUBTRACK_OPTIONS.includes(e.typeName||'');
+  const subTrack=e.typeName ? (isKnownSub?e.typeName:'기타') : '';
+  const subTrackCustom=(!isKnownSub&&e.typeName)?e.typeName:'';
+  const minReq=(e.csat&&e.csat.trim())?'O':'';
+  // 이미 같은 대학/학과로 복사된 지원 카드가 있으면 덮어쓰고, 없으면 빈 칸에 채우고, 그마저 없으면 새로 추가
+  let idx=apps.findIndex(a=>(a.school||'').trim()===e.university.trim()&&(a.dept||'')===(e.dept||''));
+  if(idx===-1) idx=apps.findIndex(a=>!(a.school||'').trim());
+  if(idx===-1){apps.push(defaultApplication());idx=apps.length-1;}
+  apps[idx]=Object.assign({},defaultApplication(),apps[idx],{
+    school:e.university||'',
+    dept:e.dept||'',
+    track:track,
+    subTrack:subTrack,
+    subTrackCustom:subTrackCustom,
+    trackContent:e.method||'',
+    minReq:minReq,
+    level:e.levelNaver||apps[idx].level||''
+  });
+  db[k].applications=apps;
+  dbSave();
+  toast(`🎓 "${e.university}" 희망 대학 정보를 수시 지원 현황으로 복사했습니다.`);
+  dSubTab('apply');
 }
 function appliSaveTeacher(k){
   ensureApplications(k);
@@ -2247,7 +2281,7 @@ function exportApplyExcel(){
         '학교명':a.school||'','학과명(모집단위)':a.dept||'',
         '전형':a.track||'','세부전형명칭':a.subTrack==='기타'?(a.subTrackCustom||'기타'):(a.subTrack||''),
         '계열':a.stream||'','전형내용':a.trackContent||'',
-        '최저학력여부':a.minReq||'',
+        '지원성향':a.level||'','최저학력여부':a.minReq||'',
         '실기면접일정':a.examDate||'','실기면접시간':a.examTime||'',
         '1단계발표일':a.stage1Date||'','최종발표일':a.finalAnnounceDate||'',
         '최초합격여부':a.firstPass||'','예비번호':a.waitNum||'','최종합격(몇차)':a.finalRound||'',
@@ -2350,10 +2384,21 @@ function openDetail(no){
           <div class="ev-univ">${e.university||'(없음)'}</div>
           <div style="font-size:13px;font-weight:600;opacity:.85">${e.dept||''}</div>
         </div>
-        <div style="display:flex;flex-direction:column;gap:3px;align-items:flex-end;flex-shrink:0">
-          ${e.levelNaver?`<span class="lvb ${e.levelNaver}">내신닷컴: ${e.levelNaver}</span>`:''}
-          ${e.levelKcue?`<span class="lvb ${e.levelKcue}" style="background:var(--purple)">대교협: ${e.levelKcue}</span>`:''}
+        <div style="display:flex;flex-direction:column;gap:6px;align-items:flex-end;flex-shrink:0">
+          <div style="display:flex;gap:4px;flex-wrap:wrap;justify-content:flex-end">
+            ${e.levelNaver?`<span class="lvb ${e.levelNaver}">내신닷컴: ${e.levelNaver}</span>`:''}
+            ${e.levelKcue?`<span class="lvb ${e.levelKcue}" style="background:var(--purple)">대교협: ${e.levelKcue}</span>`:''}
+          </div>
+          <button type="button" class="btn-sm btn-teal" onclick="copyEntryToApply('${k}',${ei})">🎓 수시지원으로 복사</button>
         </div>
+      </div>
+      <div class="lv-group-wrap" style="padding:10px 16px 0">
+        <div class="lv-col-label" style="margin-bottom:6px">🌐 내신닷컴 기준 지원구분 (과도상향 ~ 과도하향)</div>
+        <div class="lv-opts">${LEVELS.map(lv=>`
+          <div class="lvo" data-l="${lv}">
+            <input type="radio" disabled ${e.levelNaver===lv?'checked':''}>
+            <label>${lv}</label>
+          </div>`).join('')}</div>
       </div>
       <div class="ev-grid">
         <div class="ev-f"><div class="fl">전형유형</div><div class="fv">${e.type||'-'}</div></div>
@@ -2904,6 +2949,11 @@ function applySchoolCardHtml(a,i,editable,prefix,k){
     : a.waitNum ? `<span class="as-badge as-wait">예비 ${a.waitNum}</span>`
     : '';
   const subTrackLabel = a.subTrack==='기타' ? (a.subTrackCustom||'기타') : (a.subTrack||'');
+  const lvOpts=LEVELS.map(lv=>`
+    <div class="lvo" data-l="${lv}">
+      <input type="radio" name="${prefix}${i}_level" id="${prefix}${i}_level_${lv}" value="${lv}" ${a.level===lv?'checked':''} ${dis}>
+      <label for="${prefix}${i}_level_${lv}">${lv}</label>
+    </div>`).join('');
   return `
     <details class="apply-school" ${i===0?'open':''}>
       <summary class="apply-school-summary">
@@ -2914,6 +2964,7 @@ function applySchoolCardHtml(a,i,editable,prefix,k){
           ${a.track?`<span class="as-track">${a.track}</span>`:''}
           ${subTrackLabel?`<span class="as-subtrack">${subTrackLabel}</span>`:''}
         </span>
+        ${a.level?`<span class="lvb ${a.level}">${a.level}</span>`:''}
         ${statusBadge}
         <span class="as-chev">⌄</span>
       </summary>
@@ -2935,6 +2986,10 @@ function applySchoolCardHtml(a,i,editable,prefix,k){
           <div class="fg sp2" id="${prefix}${i}_subtrackCustomWrap" style="${a.subTrack==='기타'?'':'display:none'}">
             <label>세부전형 명칭 (직접 입력)</label><input type="text" id="${prefix}${i}_subtrackCustom" value="${a.subTrackCustom||''}" placeholder="세부전형 명칭을 직접 입력하세요" ${dis}>
           </div>
+        </div>
+        <div class="as-section-label">🎯 지원 성향 (과도상향 ~ 과도하향)</div>
+        <div class="lv-group-wrap">
+          <div class="lv-opts">${lvOpts}</div>
         </div>
         <div class="as-section-label">전형 내용 · 최저학력</div>
         <div class="grid2">
